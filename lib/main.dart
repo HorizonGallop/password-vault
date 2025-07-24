@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pswrd_vault/core/utils/app_theme.dart';
-import 'package:pswrd_vault/features/home/screens/home_screen.dart';
+import 'package:pswrd_vault/core/routing/app_routes.dart';
+import 'package:pswrd_vault/core/routing/app_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Pswrd Vault',
           theme: AppTheme.darkTheme,
-          home: const HomeScreen(),
+          initialRoute: AppRoutes.splash,
+          onGenerateRoute: AppRouter.onGenerateRoute,
         );
       },
     );
