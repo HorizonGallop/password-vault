@@ -1,8 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="Pswrd Vault"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,6 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Firebase & Google Sign-In Config -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/launcher_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/white" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
