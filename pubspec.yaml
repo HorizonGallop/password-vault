@@ -8,45 +8,47 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  crypto: ^3.0.6 # Hashing & cryptographic functions
+  cupertino_icons: ^1.0.8 # iOS-style icons
+  encrypt: ^5.0.3 # Encryption utilities for data security
+  equatable: ^2.0.5 # For value equality in BLoC states and events
+
+  # 📂 File Management & Sharing
+  file_picker: ^10.2.0 # Pick files from device storage
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8 # iOS-style icons
 
   # 🧩 State Management
   flutter_bloc: ^9.1.1 # State management using BLoC pattern
+  flutter_screenutil: ^5.9.3 # Responsive UI helper
 
   # 🔐 Secure Storage & Encryption
   flutter_secure_storage: ^9.2.4 # Securely store sensitive data
-  encrypt: ^5.0.3 # Encryption utilities for data security
-  crypto: ^3.0.6 # Hashing & cryptographic functions
+  shared_preferences: ^2.5.3 # Securely store user preferences
 
   # 🎨 UI & Design
   flutter_svg: ^2.2.0 # Render SVG images
   google_fonts: ^6.2.1 # Use custom Google Fonts
-  flutter_screenutil: ^5.9.3 # Responsive UI helper
-  lottie: ^3.3.1 # Lottie animations for modern UI
+  introduction_screen: ^3.1.17 # 🔥 Onboarding screens
 
   # 👤 Authentication & Biometrics
   local_auth: ^2.3.0 # Fingerprint & Face ID authentication
-
-  # 📂 File Management & Sharing
-  file_picker: ^10.2.0 # Pick files from device storage
+  lottie: ^3.3.1 # Lottie animations for modern UI
   share_plus: ^11.0.0 # Share content across apps
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
+  flutter_lints: ^5.0.0
+  flutter_native_splash: ^2.4.6
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0 # Recommended lint rules
-
-  # 🖼️ App Icon & Splash Screen
-  flutter_launcher_icons: ^0.14.4 # Generate app icons
-  flutter_native_splash: ^2.4.6 # Create a native splash screen
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
     - assets/icons/
+    - assets/lottie/
   fonts:
     - family: Cairo
       fonts:

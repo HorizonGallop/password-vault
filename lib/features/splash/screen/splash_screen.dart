@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
-import '../cubit/splash_cubit.dart';
+import 'package:pswrd_vault/features/splash/cubit/splash_cubit.dart';
+import 'package:pswrd_vault/features/onboarding/screens/onboarding_screen.dart';
+import 'package:pswrd_vault/features/auth/screen/auth_screen.dart';
+import 'package:pswrd_vault/features/home/screens/home_screen.dart';
 
 class SplashScreen extends StatelessWidget {
+  static const String routeName = '/splash-screen';
   const SplashScreen({super.key});
 
   @override
@@ -14,17 +18,21 @@ class SplashScreen extends StatelessWidget {
         backgroundColor: AppColors.appBarBackground,
         body: BlocListener<SplashCubit, SplashState>(
           listener: (context, state) {
-            if (state is SplashNavigateToHome) {
-              Navigator.pushReplacementNamed(context, '/home');
-            } else if (state is SplashNavigateToLogin) {
-              Navigator.pushReplacementNamed(context, '/login');
+            if (state is SplashNavigateToOnboarding) {
+              Navigator.pushReplacementNamed(context, OnboardingScreen.routeName);
+            } else if (state is SplashNavigateToAuth) {
+              Navigator.pushReplacementNamed(context, AuthScreen.routeName);
+            } else if (state is SplashNavigateToHome) {
+              Navigator.pushReplacementNamed(context, HomeScreen.routeName);
             }
           },
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/icons/app_icon.png'),
+                Image.asset('assets/icons/app_icon.png', width: 120, height: 120),
+                const SizedBox(height: 20),
+                const CircularProgressIndicator(color: AppColors.white),
               ],
             ),
           ),
