@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pswrd_vault/features/auth/screen/auth_screen.dart';
+
+import 'package:pswrd_vault/features/auth/screens/google_auth_screen.dart';
+import 'package:pswrd_vault/features/auth/screens/master_password_screen.dart';
+import 'package:pswrd_vault/features/auth/screens/biometric_screen.dart';
+import 'package:pswrd_vault/features/auth/screens/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/home/screens/home_screen.dart';
+import 'package:pswrd_vault/features/navigation/screen/bottom_nav_screen.dart';
 import 'package:pswrd_vault/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:pswrd_vault/features/onboarding/screens/onboarding_screen.dart';
 import 'package:pswrd_vault/features/splash/screen/splash_screen.dart';
@@ -23,8 +28,22 @@ class AppRouter {
       case HomeScreen.routeName:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
 
-      case AuthScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const AuthScreen());
+      case GoogleAuthScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const GoogleAuthScreen());
+
+      case MasterPasswordScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const MasterPasswordScreen());
+
+      case BiometricAuthScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const BiometricAuthScreen());
+
+      case VerifyMasterPasswordScreen.routeName:
+        return MaterialPageRoute(
+          builder: (_) => const VerifyMasterPasswordScreen(),
+        );
+
+      case BottomNavScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const BottomNavScreen());
 
       default:
         return MaterialPageRoute(

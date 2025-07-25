@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
-import 'package:pswrd_vault/features/auth/screen/auth_screen.dart';
+import 'package:pswrd_vault/features/auth/screens/google_auth_screen.dart';
 import 'package:pswrd_vault/features/onboarding/cubit/onboarding_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -56,19 +56,11 @@ class OnboardingScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToAuth(BuildContext context) {
-    context.read<OnboardingCubit>().completeOnboarding();
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const AuthScreen(),
-        transitionsBuilder: (_, animation, __, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 700),
-      ),
-    );
-  }
+void _navigateToAuth(BuildContext context) {
+  context.read<OnboardingCubit>().completeOnboarding();
+  Navigator.pushReplacementNamed(context, GoogleAuthScreen.routeName);
+}
+
 
   PageDecoration _getPageDecoration() {
     return PageDecoration(

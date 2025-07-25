@@ -8,33 +8,43 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
-  crypto: ^3.0.6 # Hashing & cryptographic functions
-  cupertino_icons: ^1.0.8 # iOS-style icons
-  encrypt: ^5.0.3 # Encryption utilities for data security
-  equatable: ^2.0.5 # For value equality in BLoC states and events
+  cloud_firestore: ^5.4.4 # Cloud Firestore NoSQL database for storing encrypted data
+  crypto: ^3.0.6 # Provides cryptographic hashing functions (SHA256, etc.)
+  cupertino_icons: ^1.0.8 # Default iOS-style icons for Flutter apps
+  encrypt: ^5.0.3 # Encryption and decryption utilities (AES, RSA)
+  equatable: ^2.0.5 # Value equality for state comparison in Cubit/BLoC
 
   # 📂 File Management & Sharing
-  file_picker: ^10.2.0 # Pick files from device storage
+  file_picker: ^10.2.0 # Pick files from device storage for import/export
+  firebase_auth: ^5.3.3 # Firebase Authentication (Google, Email, etc.)
+
+  # 🔥 Firebase (Core, Auth, Firestore)
+  firebase_core: ^3.7.0 # Required to initialize Firebase in Flutter
+
+  # 📦 Flutter SDK
   flutter:
     sdk: flutter
 
   # 🧩 State Management
-  flutter_bloc: ^9.1.1 # State management using BLoC pattern
-  flutter_screenutil: ^5.9.3 # Responsive UI helper
-
-  # 🔐 Secure Storage & Encryption
-  flutter_secure_storage: ^9.2.4 # Securely store sensitive data
-  shared_preferences: ^2.5.3 # Securely store user preferences
+  flutter_bloc: ^9.1.1 # State management using the BLoC pattern
 
   # 🎨 UI & Design
-  flutter_svg: ^2.2.0 # Render SVG images
-  google_fonts: ^6.2.1 # Use custom Google Fonts
-  introduction_screen: ^3.1.17 # 🔥 Onboarding screens
+  flutter_screenutil: ^5.9.3 # Responsive layout helper for different screen sizes
+  flutter_secure_storage: ^9.2.4 # Store sensitive data securely in Keychain/Keystore
+  flutter_svg: ^2.2.0 # Render SVG images for scalable icons
+  google_fonts: ^6.2.1 # Use Google Fonts easily in Flutter
 
-  # 👤 Authentication & Biometrics
-  local_auth: ^2.3.0 # Fingerprint & Face ID authentication
-  lottie: ^3.3.1 # Lottie animations for modern UI
-  share_plus: ^11.0.0 # Share content across apps
+  # 🔑 Google Sign-In
+  google_sign_in: ^6.2.1 # Google authentication SDK for Flutter apps
+  introduction_screen: ^3.1.17 # Create onboarding screens with multiple pages
+
+  # 🔐 Biometrics & Local Authentication
+  local_auth: ^2.3.0 # Use fingerprint or Face ID for user authentication
+  lottie: ^3.3.1 # Add Lottie animations for engaging UI effects
+  share_plus: ^11.0.0 # Share content across different apps/platforms
+
+  # ⚙️ Preferences
+  shared_preferences: ^2.5.3 # Store small user preferences locally
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
@@ -42,6 +52,9 @@ dev_dependencies:
   flutter_native_splash: ^2.4.6
   flutter_test:
     sdk: flutter
+  fluttertoast: ^8.2.12
+  pinput: ^5.0.1
+  smooth_page_indicator: ^1.2.1
 
 flutter:
   uses-material-design: true

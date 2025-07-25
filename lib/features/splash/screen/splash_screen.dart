@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
+import 'package:pswrd_vault/features/auth/screens/google_auth_screen.dart';
 import 'package:pswrd_vault/features/splash/cubit/splash_cubit.dart';
 import 'package:pswrd_vault/features/onboarding/screens/onboarding_screen.dart';
-import 'package:pswrd_vault/features/auth/screen/auth_screen.dart';
-import 'package:pswrd_vault/features/home/screens/home_screen.dart';
+import 'package:pswrd_vault/features/home/screens/home_screen.dart'; // ✅ أضف شاشة الـ Home
 
 class SplashScreen extends StatelessWidget {
   static const String routeName = '/splash-screen';
@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
             if (state is SplashNavigateToOnboarding) {
               Navigator.pushReplacementNamed(context, OnboardingScreen.routeName);
             } else if (state is SplashNavigateToAuth) {
-              Navigator.pushReplacementNamed(context, AuthScreen.routeName);
+              Navigator.pushReplacementNamed(context, GoogleAuthScreen.routeName);
             } else if (state is SplashNavigateToHome) {
               Navigator.pushReplacementNamed(context, HomeScreen.routeName);
             }
