@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
-import 'package:pswrd_vault/features/auth/cubit/auth_cubit.dart';
-import 'package:pswrd_vault/features/auth/cubit/auth_state.dart';
-import 'package:pswrd_vault/features/auth/screens/biometric_screen.dart';
+import 'package:pswrd_vault/features/navigation/screen/bottom_nav_screen.dart';
 import 'package:pswrd_vault/features/widgets/custom_button.dart';
 import 'package:pswrd_vault/features/widgets/custom_input_field.dart';
 import 'package:pswrd_vault/features/widgets/loading_widget.dart';
 import 'package:pswrd_vault/features/widgets/powered_by_widget.dart';
+
+import '../cubit/verify_master_password_cubit.dart';
 
 class VerifyMasterPasswordScreen extends StatelessWidget {
   static const routeName = '/verify-master-password';
@@ -19,23 +19,28 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final passwordController = TextEditingController();
 
-    return BlocConsumer<AuthCubit, AuthState>(
+    return BlocConsumer<VerifyMasterPasswordCubit, VerifyMasterPasswordState>(
       listener: (context, state) {
-        if (state is MasterPasswordVerified) {
-          Navigator.pushReplacementNamed(context, BiometricAuthScreen.routeName);
+        if (state is MasterPasswordVerified || state is BiometricSuccess) {
+          Navigator.pushReplacementNamed(context, BottomNavScreen.routeName);
         } else if (state is MasterPasswordVerifyFailed ||
-            state is AuthFailure) {
+            state is VerifyMasterPasswordError ||
+            state is BiometricFailure) {
           final error = state is MasterPasswordVerifyFailed
               ? state.error
-              : (state as AuthFailure).error;
+              : state is VerifyMasterPasswordError
+              ? state.message
+              : (state as BiometricFailure).error;
+
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(error)));
         }
       },
-
       builder: (context, state) {
-        final isLoading = state is MasterPasswordVerifying;
+        final isLoading =
+            state is MasterPasswordVerifying ||
+            state is BiometricAuthenticating;
 
         return Stack(
           children: [
@@ -58,34 +63,48 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
                                 hintText: "Master Password",
                                 controller: passwordController,
                               ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: 10.h),
                               CustomButton(
                                 text: "Unlock Vault",
                                 onPressed: isLoading
                                     ? null
                                     : () {
                                         context
-                                            .read<AuthCubit>()
+                                            .read<VerifyMasterPasswordCubit>()
                                             .verifyMasterPassword(
                                               passwordController.text,
                                             );
                                       },
                                 backgroundColor: AppColors.primary,
                               ),
-                              SizedBox(
-                                height: 40.h,
-                              ), // Just to add space above footer
+                              SizedBox(height: 20.h),
+                              Text(
+                                "or use your fingerprint",
+                                style: TextStyle(fontSize: 12.sp),
+                              ),
+                              SizedBox(height: 10.h),
+                              GestureDetector(
+                                onTap: () {
+                                  context
+                                      .read<VerifyMasterPasswordCubit>()
+                                      .authenticateWithBiometric();
+                                },
+                                child: Image.asset(
+                                  "assets/icons/fingerprint.png",
+                                  scale: 10,
+                                ),
+                              ),
+                              SizedBox(height: 40.h),
                             ],
                           ),
                         ),
                       ),
-                      const PoweredByWidget(), // <- Stuck to bottom of screen
+                      const PoweredByWidget(),
                     ],
                   ),
                 ),
               ),
             ),
-
             if (isLoading) const LoadingOverlay(),
           ],
         );

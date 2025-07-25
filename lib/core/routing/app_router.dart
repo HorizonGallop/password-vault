@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:pswrd_vault/features/auth/screens/google_auth_screen.dart';
-import 'package:pswrd_vault/features/auth/screens/master_password_screen.dart';
-import 'package:pswrd_vault/features/auth/screens/biometric_screen.dart';
-import 'package:pswrd_vault/features/auth/screens/verify_master_password_screen.dart';
+import 'package:pswrd_vault/features/auth/google-signin/screen/google_auth_screen.dart';
+import 'package:pswrd_vault/features/auth/master-password/screen/master_password_screen.dart';
+import 'package:pswrd_vault/features/auth/biometric/screen/biometric_screen.dart';
+import 'package:pswrd_vault/features/auth/verify-password/cubit/verify_master_password_cubit.dart';
+import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/home/screens/home_screen.dart';
 import 'package:pswrd_vault/features/navigation/screen/bottom_nav_screen.dart';
 import 'package:pswrd_vault/features/onboarding/cubit/onboarding_cubit.dart';
@@ -39,7 +40,10 @@ class AppRouter {
 
       case VerifyMasterPasswordScreen.routeName:
         return MaterialPageRoute(
-          builder: (_) => const VerifyMasterPasswordScreen(),
+          builder: (_) => BlocProvider(
+            create: (_) => VerifyMasterPasswordCubit(),
+            child: const VerifyMasterPasswordScreen(),
+          ),
         );
 
       case BottomNavScreen.routeName:

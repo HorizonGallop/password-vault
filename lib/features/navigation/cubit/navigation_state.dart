@@ -1,6 +1,18 @@
-part of 'navigation_cubit.dart';
+import 'package:equatable/equatable.dart';
 
-@immutable
-sealed class NavigationState {}
+abstract class NavigationState extends Equatable {
+  const NavigationState();
 
-final class NavigationInitial extends NavigationState {}
+  @override
+  List<Object?> get props => [];
+}
+
+class NavigationInitial extends NavigationState {}
+
+class NavigationChanged extends NavigationState {
+  final int currentIndex;
+  const NavigationChanged(this.currentIndex);
+
+  @override
+  List<Object?> get props => [currentIndex];
+}

@@ -1,58 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:pswrd_vault/core/utils/app_colors.dart';
+import 'package:pswrd_vault/features/auth/master-password/cubit/master_password_state.dart';
 
-class PasswordRequirements extends StatelessWidget {
-  final String password;
+class PasswordRequirementsWidget extends StatelessWidget {
+  final MasterPasswordValidationState state;
 
-  const PasswordRequirements({super.key, required this.password});
+  const PasswordRequirementsWidget({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
-    final List<_Requirement> requirements = [
+    final requirements = [
+      _Requirement("At least 8 characters", state.hasMinLength),
+      _Requirement("At least one uppercase letter", state.hasUpperCase),
+      _Requirement("At least one lowercase letter", state.hasLowerCase),
+      _Requirement("At least one number", state.hasNumber),
       _Requirement(
-        label: "At least 8 characters",
-        isMet: password.length >= 8,
-      ),
-      _Requirement(
-        label: "At least one uppercase letter",
-        isMet: password.contains(RegExp(r'[A-Z]')),
-      ),
-      _Requirement(
-        label: "At least one lowercase letter",
-        isMet: password.contains(RegExp(r'[a-z]')),
-      ),
-      _Requirement(
-        label: "At least one number",
-        isMet: password.contains(RegExp(r'[0-9]')),
-      ),
-      _Requirement(
-        label: "At least one special character (!@#\$%^&*)",
-        isMet: password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]')),
+        "At least one special character (!@#\$%^&*)",
+        state.hasSpecialChar,
       ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: requirements.map((req) {
-        return Row(
+      children: [
+        ...requirements.map(
+          (req) => Row(
+            children: [
+              Icon(
+                req.isMet ? Icons.check_circle : Icons.cancel,
+                color: req.isMet ? AppColors.success : AppColors.error,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                req.label,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  decoration: req.isMet
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
           children: [
             Icon(
-              req.isMet ? Icons.check_circle : Icons.cancel,
-              color: req.isMet ? Colors.green : Colors.red,
+              state.isMatch ? Icons.check_circle : Icons.cancel,
+              color: state.isMatch ? AppColors.success : AppColors.error,
               size: 20,
             ),
             const SizedBox(width: 8),
-            Text(
-              req.label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                decoration:
-                    req.isMet ? TextDecoration.lineThrough : TextDecoration.none,
-              ),
+            const Text(
+              "Passwords match",
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
           ],
-        );
-      }).toList(),
+        ),
+      ],
     );
   }
 }
@@ -60,6 +68,5 @@ class PasswordRequirements extends StatelessWidget {
 class _Requirement {
   final String label;
   final bool isMet;
-
-  _Requirement({required this.label, required this.isMet});
+  _Requirement(this.label, this.isMet);
 }

@@ -8,43 +8,45 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
-  cloud_firestore: ^5.4.4 # Cloud Firestore NoSQL database for storing encrypted data
-  crypto: ^3.0.6 # Provides cryptographic hashing functions (SHA256, etc.)
-  cupertino_icons: ^1.0.8 # Default iOS-style icons for Flutter apps
-  encrypt: ^5.0.3 # Encryption and decryption utilities (AES, RSA)
-  equatable: ^2.0.5 # Value equality for state comparison in Cubit/BLoC
+  cloud_firestore: ^5.4.4 # Firestore NoSQL database for encrypted data
+  crypto: ^3.0.6 # Cryptographic hash functions (SHA256, etc.)
+  cupertino_icons: ^1.0.8 # Default iOS icons for Flutter apps
+
+  # 🔐 Security (Encryption & Biometrics)
+  encrypt: ^5.0.3 # AES/RSA encryption and decryption
+  equatable: ^2.0.5 # Value equality for states in BLoC
 
   # 📂 File Management & Sharing
-  file_picker: ^10.2.0 # Pick files from device storage for import/export
-  firebase_auth: ^5.3.3 # Firebase Authentication (Google, Email, etc.)
+  file_picker: ^10.2.0 # Pick files from local storage
+  firebase_auth: ^5.3.3 # Firebase Authentication (Google, Email)
 
   # 🔥 Firebase (Core, Auth, Firestore)
-  firebase_core: ^3.7.0 # Required to initialize Firebase in Flutter
-
-  # 📦 Flutter SDK
+  firebase_core: ^3.7.0 # Initialize Firebase
   flutter:
     sdk: flutter
 
   # 🧩 State Management
-  flutter_bloc: ^9.1.1 # State management using the BLoC pattern
+  flutter_bloc: ^9.1.1 # BLoC pattern for state management
 
   # 🎨 UI & Design
-  flutter_screenutil: ^5.9.3 # Responsive layout helper for different screen sizes
-  flutter_secure_storage: ^9.2.4 # Store sensitive data securely in Keychain/Keystore
-  flutter_svg: ^2.2.0 # Render SVG images for scalable icons
-  google_fonts: ^6.2.1 # Use Google Fonts easily in Flutter
+  flutter_screenutil: ^5.9.3 # Responsive layout utility
+  flutter_secure_storage: ^9.2.4 # Secure storage for sensitive keys (Keychain/Keystore)
+  flutter_svg: ^2.2.0 # Render SVG images
+  google_nav_bar: ^5.0.7 # Google navigation bar 
 
   # 🔑 Google Sign-In
-  google_sign_in: ^6.2.1 # Google authentication SDK for Flutter apps
-  introduction_screen: ^3.1.17 # Create onboarding screens with multiple pages
+  google_sign_in: ^6.2.1 # Google authentication
 
-  # 🔐 Biometrics & Local Authentication
-  local_auth: ^2.3.0 # Use fingerprint or Face ID for user authentication
-  lottie: ^3.3.1 # Add Lottie animations for engaging UI effects
-  share_plus: ^11.0.0 # Share content across different apps/platforms
-
-  # ⚙️ Preferences
-  shared_preferences: ^2.5.3 # Store small user preferences locally
+  # 💾 Local Storage (Offline Database)
+  hive: ^2.2.3 # Lightweight and fast NoSQL database
+  hive_flutter: ^1.1.0 # Hive integration with Flutter
+  introduction_screen: ^3.1.17 # Onboarding screens
+  local_auth: ^2.3.0 # Biometric authentication (fingerprint/Face ID)
+  lottie: ^3.3.1 # Lottie animations for modern UI
+  path_provider: ^2.1.5 # Access device directories for storage
+  pinput: ^5.0.1 # OTP input fields
+  share_plus: ^11.0.0 # Share content across apps
+  smooth_page_indicator: ^1.2.1 # Page indicator for onboarding
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
@@ -53,8 +55,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   fluttertoast: ^8.2.12
-  pinput: ^5.0.1
-  smooth_page_indicator: ^1.2.1
 
 flutter:
   uses-material-design: true

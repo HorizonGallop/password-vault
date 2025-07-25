@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
-import 'package:pswrd_vault/features/auth/cubit/auth_cubit.dart';
-import 'package:pswrd_vault/features/auth/cubit/auth_state.dart';
-import 'package:pswrd_vault/features/auth/screens/master_password_screen.dart';
-import 'package:pswrd_vault/features/auth/screens/verify_master_password_screen.dart';
+import 'package:pswrd_vault/features/auth/master-password/screen/master_password_screen.dart';
+import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/widgets/powered_by_widget.dart';
 import 'package:pswrd_vault/features/widgets/sign_in_card.dart';
 import 'package:pswrd_vault/features/widgets/toast_message_widget.dart';
+import '../cubit/google_auth_cubit.dart';
+import '../cubit/google_auth_state.dart';
 
 class GoogleAuthScreen extends StatelessWidget {
   static const String routeName = '/google-auth-screen';
@@ -18,9 +18,9 @@ class GoogleAuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
-      body: BlocConsumer<AuthCubit, AuthState>(
+      body: BlocConsumer<GoogleAuthCubit, GoogleAuthState>(
         listener: (context, state) {
-          if (state is AuthFailure) {
+          if (state is GoogleAuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -30,7 +30,7 @@ class GoogleAuthScreen extends StatelessWidget {
                 backgroundColor: Colors.red,
               ),
             );
-          } else if (state is AuthRouteUser) {
+          } else if (state is GoogleAuthSuccess) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final route = state.needsMasterPassword
                   ? MasterPasswordScreen.routeName
@@ -55,8 +55,9 @@ class GoogleAuthScreen extends StatelessWidget {
                             SignInCard(
                               label: "Sign in with Google",
                               assetPath: 'assets/icons/google.png',
-                              onTap: () =>
-                                  context.read<AuthCubit>().signInWithGoogle(),
+                              onTap: () => context
+                                  .read<GoogleAuthCubit>()
+                                  .signInWithGoogle(),
                             ),
                             SignInCard(
                               label: "Sign in with Apple",
@@ -80,9 +81,8 @@ class GoogleAuthScreen extends StatelessWidget {
                               backgroundColor: const Color(0xFF1877F2),
                               textColor: Colors.white,
                             ),
-
                             SizedBox(height: 20.h),
-                            if (state is AuthLoading)
+                            if (state is GoogleAuthLoading)
                               const CircularProgressIndicator(
                                 color: AppColors.primary,
                               ),
