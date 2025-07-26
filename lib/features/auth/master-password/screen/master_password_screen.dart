@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
+import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/widgets/custom_button.dart';
 import 'package:pswrd_vault/features/widgets/custom_input_field.dart';
 import 'package:pswrd_vault/features/widgets/loading_widget.dart';
@@ -24,7 +25,10 @@ class MasterPasswordScreen extends StatelessWidget {
       child: BlocConsumer<MasterPasswordCubit, MasterPasswordState>(
         listener: (context, state) {
           if (state is MasterPasswordSaved) {
-            Navigator.pushReplacementNamed(context, '/pin-code-screen');
+            Navigator.pushReplacementNamed(
+              context,
+              VerifyMasterPasswordScreen.routeName,
+            );
           } else if (state is MasterPasswordFailure) {
             ScaffoldMessenger.of(
               context,
@@ -44,35 +48,35 @@ class MasterPasswordScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 40),
+                        SizedBox(height: 40.h),
                         Container(
                           height: 60,
                           width: 60,
                           decoration: BoxDecoration(
                             color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16.r),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.lock,
                             color: Colors.white,
-                            size: 30,
+                            size: 30.sp,
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        const Text(
+                        SizedBox(height: 20.h),
+                        Text(
                           "Create Master Password",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 24.h,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
+                        SizedBox(height: 8.h),
+                        Text(
                           "This password will unlock your vault.",
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                          style: TextStyle(color: Colors.grey, fontSize: 16.sp),
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: 40.h),
 
                         /// ✅ Password Fields
                         CustomInputField(
@@ -87,7 +91,7 @@ class MasterPasswordScreen extends StatelessWidget {
                                 );
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         CustomInputField(
                           hintText: "Confirm Master Password",
                           controller: confirmController,
@@ -100,7 +104,7 @@ class MasterPasswordScreen extends StatelessWidget {
                                 );
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
 
                         /// ✅ Password Requirements Widget
                         BlocBuilder<MasterPasswordCubit, MasterPasswordState>(

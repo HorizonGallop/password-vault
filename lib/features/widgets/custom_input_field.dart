@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
 
 class CustomInputField extends StatelessWidget {
@@ -34,7 +35,7 @@ class CustomInputField extends StatelessWidget {
         filled: true,
         fillColor: fillColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
         ),
       ),

@@ -16,7 +16,7 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
 
   /// ✅ التحقق من قوة الباسوورد
   void validateMasterPassword(String password, String confirmPassword) {
-    final hasMinLength = password.length >= 8;
+    final hasMinLength = password.length >= 12;
     final hasUpperCase = RegExp(r'[A-Z]').hasMatch(password);
     final hasLowerCase = RegExp(r'[a-z]').hasMatch(password);
     final hasNumber = RegExp(r'[0-9]').hasMatch(password);

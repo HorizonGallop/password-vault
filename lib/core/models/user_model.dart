@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
   final String uid;
@@ -27,6 +28,7 @@ class UserModel {
     this.providerData = const [],
   });
 
+  /// ✅ تحويل لـ Map
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
@@ -43,28 +45,57 @@ class UserModel {
     };
   }
 
+  /// ✅ إنشاء من Map
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      uid: map['uid'],
-      displayName: map['displayName'],
+      uid: map['uid'] ?? '',
+      displayName: map['name'], // تعديل هنا لاستخدام المفتاح الصحيح
       email: map['email'],
       phoneNumber: map['phoneNumber'],
       photoURL: map['photoURL'],
       isAnonymous: map['isAnonymous'] ?? false,
       emailVerified: map['emailVerified'] ?? false,
       tenantId: map['tenantId'],
-      creationTime: map['creationTime'] != null
-          ? DateTime.parse(map['creationTime'])
-          : null,
-      lastSignInTime: map['lastSignInTime'] != null
-          ? DateTime.parse(map['lastSignInTime'])
-          : null,
+      creationTime: _parseDate(map['creationTime']),
+      lastSignInTime: _parseDate(map['lastSignInTime']),
       providerData: List<Map<String, dynamic>>.from(map['providerData'] ?? []),
     );
   }
 
+  /// ✅ دعم Firestore Timestamp
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  /// ✅ إنشاء من JSON
   String toJson() => json.encode(toMap());
 
+  /// ✅ إنشاء من JSON String
   factory UserModel.fromJson(String source) =>
       UserModel.fromMap(json.decode(source));
+
+  /// ✅ لإنشاء نسخة جديدة
+  UserModel copyWith({
+    String? displayName,
+    String? email,
+    String? phoneNumber,
+    String? photoURL,
+  }) {
+    return UserModel(
+      uid: uid,
+      displayName: displayName ?? this.displayName,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      photoURL: photoURL ?? this.photoURL,
+      isAnonymous: isAnonymous,
+      emailVerified: emailVerified,
+      tenantId: tenantId,
+      creationTime: creationTime,
+      lastSignInTime: lastSignInTime,
+      providerData: providerData,
+    );
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
+import 'package:pswrd_vault/core/utils/app_colors.dart';
 
 class SignInCard extends StatelessWidget {
   final String label;
@@ -14,7 +15,7 @@ class SignInCard extends StatelessWidget {
     required this.assetPath,
     required this.onTap,
     this.backgroundColor = Colors.white,
-    this.textColor = Colors.black87,
+    this.textColor = AppColors.dark,
   });
 
   @override
@@ -22,8 +23,8 @@ class SignInCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(14),
@@ -39,11 +40,11 @@ class SignInCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(assetPath, height: 24.h),
-             SizedBox(width: 12.w),
+            SizedBox(width: 12.w),
             Text(
               label,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
                 color: textColor,
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/auth/biometric/screen/biometric_screen.dart';
 import 'package:pswrd_vault/features/auth/google-signin/screen/google_auth_screen.dart';
@@ -50,19 +51,30 @@ class SplashScreen extends StatelessWidget {
               Navigator.pushReplacementNamed(context, HomeScreen.routeName);
             }
           },
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/icons/app_icon.png',
-                  width: 120,
-                  height: 120,
-                ),
-                const SizedBox(height: 20),
-                const CircularProgressIndicator(color: AppColors.white),
-              ],
-            ),
+          child: FutureBuilder(
+            future: Hive.initFlutter(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/icons/app_icon.png',
+                        width: 120,
+                        height: 120,
+                      ),
+                      const SizedBox(height: 20),
+                      const CircularProgressIndicator(color: AppColors.white),
+                    ],
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.white),
+                );
+              }
+            },
           ),
         ),
       ),

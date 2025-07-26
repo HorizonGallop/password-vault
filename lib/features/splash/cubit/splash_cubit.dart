@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:pswrd_vault/core/models/user_model.dart';
 
 part 'splash_state.dart';
 
@@ -22,7 +24,10 @@ class SplashCubit extends Cubit<SplashState> {
 
     await Future.delayed(const Duration(seconds: 2));
 
-    // ✅ Check onboarding using SecureStorage
+    // ✅ الصندوق مفتوح بالفعل من main.dart
+    final userBox = Hive.box('userBox');
+
+    // ✅ تحقق من الـ Onboarding
     final onboardingDone =
         await _secureStorage.read(key: _onboardingKey) == 'true';
     if (!onboardingDone) {
@@ -30,36 +35,43 @@ class SplashCubit extends Cubit<SplashState> {
       return;
     }
 
-    // ✅ Check if user is signed in
+    // ✅ لو عندنا بيانات محلية لكن المستخدم مش لوج إن
+    final localUser = userBox.get('user');
+    if (localUser != null && _auth.currentUser == null) {
+      emit(SplashNavigateToGoogleAuth());
+      return;
+    }
+
+    // ✅ Firebase Auth
     final user = _auth.currentUser;
     if (user == null) {
       emit(SplashNavigateToGoogleAuth());
       return;
     }
 
-    // ✅ Fetch user data from Firestore
+    // ✅ Fetch من Firestore
     final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (doc.exists) {
+      final userData = doc.data()!;
+      final userModel = UserModel.fromMap(userData);
 
-    if (!doc.exists) {
-      emit(SplashNavigateToGoogleAuth());
-      return;
-    }
+      await userBox.put('user', userModel.toJson()); // حفظ JSON بدل Map
 
-    final hasMasterPassword = doc.data()?['hasMasterPassword'] == true;
+      final hasMasterPassword = userData['hasMasterPassword'] == true;
+      if (!hasMasterPassword) {
+        emit(SplashNavigateToMasterPassword());
+        return;
+      }
 
-    if (!hasMasterPassword) {
-      emit(SplashNavigateToMasterPassword());
-      return;
-    }
-
-    // ✅ Check Biometric preference
-    final biometricEnabled =
-        await _secureStorage.read(key: _biometricKey) == 'true';
-
-    if (biometricEnabled) {
-      emit(SplashNavigateToBiometric());
+      final biometricEnabled =
+          await _secureStorage.read(key: _biometricKey) == 'true';
+      if (biometricEnabled) {
+        emit(SplashNavigateToBiometric());
+      } else {
+        emit(SplashNavigateToVerifyMasterPassword());
+      }
     } else {
-      emit(SplashNavigateToVerifyMasterPassword());
+      emit(SplashNavigateToGoogleAuth());
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
@@ -10,7 +11,7 @@ class ToastMessage {
       gravity: ToastGravity.BOTTOM,
       backgroundColor: AppColors.cardBackground,
       textColor: Colors.white,
-      fontSize: 14.0,
+      fontSize: 14.sp,
     );
   }
 }

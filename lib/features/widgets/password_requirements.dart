@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/auth/master-password/cubit/master_password_state.dart';
 
@@ -10,7 +11,7 @@ class PasswordRequirementsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final requirements = [
-      _Requirement("At least 8 characters", state.hasMinLength),
+      _Requirement("At least 12 characters", state.hasMinLength),
       _Requirement("At least one uppercase letter", state.hasUpperCase),
       _Requirement("At least one lowercase letter", state.hasLowerCase),
       _Requirement("At least one number", state.hasNumber),
@@ -29,14 +30,14 @@ class PasswordRequirementsWidget extends StatelessWidget {
               Icon(
                 req.isMet ? Icons.check_circle : Icons.cancel,
                 color: req.isMet ? AppColors.success : AppColors.error,
-                size: 20,
+                size: 20.r,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Text(
                 req.label,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   decoration: req.isMet
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,
@@ -45,18 +46,18 @@ class PasswordRequirementsWidget extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Row(
           children: [
             Icon(
               state.isMatch ? Icons.check_circle : Icons.cancel,
               color: state.isMatch ? AppColors.success : AppColors.error,
-              size: 20,
+              size: 20.r,
             ),
-            const SizedBox(width: 8),
-            const Text(
+            SizedBox(width: 8.h),
+            Text(
               "Passwords match",
-              style: TextStyle(color: Colors.white, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 14.sp),
             ),
           ],
         ),

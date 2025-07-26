@@ -13,7 +13,7 @@ class PoweredByWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset('assets/icons/app_icon.png', width: 16.r, height: 16.r),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Text(
             'Powered by Muhammad',
             style: TextStyle(fontSize: 8.sp, color: AppColors.titleText),
