@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/auth/biometric/screen/biometric_screen.dart';
 import 'package:pswrd_vault/features/auth/google-signin/screen/google_auth_screen.dart';
 import 'package:pswrd_vault/features/auth/master-password/screen/master_password_screen.dart';
@@ -16,10 +15,11 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (_) => SplashCubit()..startSplash(),
       child: Scaffold(
-        backgroundColor: AppColors.appBarBackground,
         body: BlocListener<SplashCubit, SplashState>(
           listener: (context, state) {
             if (state is SplashNavigateToOnboarding) {
@@ -65,13 +65,17 @@ class SplashScreen extends StatelessWidget {
                         height: 120,
                       ),
                       const SizedBox(height: 20),
-                      const CircularProgressIndicator(color: AppColors.white),
+                      CircularProgressIndicator(
+                        color: colorScheme.onBackground,
+                      ),
                     ],
                   ),
                 );
               } else {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.white),
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: colorScheme.onBackground,
+                  ),
                 );
               }
             },

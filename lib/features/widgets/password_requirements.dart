@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pswrd_vault/core/extensions/size_extension.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pswrd_vault/features/auth/master-password/cubit/master_password_state.dart';
 
 class PasswordRequirementsWidget extends StatelessWidget {
@@ -10,6 +9,9 @@ class PasswordRequirementsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final requirements = [
       _Requirement("At least 12 characters", state.hasMinLength),
       _Requirement("At least one uppercase letter", state.hasUpperCase),
@@ -29,14 +31,14 @@ class PasswordRequirementsWidget extends StatelessWidget {
             children: [
               Icon(
                 req.isMet ? Icons.check_circle : Icons.cancel,
-                color: req.isMet ? AppColors.success : AppColors.error,
+                color: req.isMet ? colorScheme.primary : colorScheme.error,
                 size: 20.r,
               ),
               SizedBox(width: 8.w),
               Text(
                 req.label,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.onSurface,
                   fontSize: 14.sp,
                   decoration: req.isMet
                       ? TextDecoration.lineThrough
@@ -51,13 +53,13 @@ class PasswordRequirementsWidget extends StatelessWidget {
           children: [
             Icon(
               state.isMatch ? Icons.check_circle : Icons.cancel,
-              color: state.isMatch ? AppColors.success : AppColors.error,
+              color: state.isMatch ? colorScheme.primary : colorScheme.error,
               size: 20.r,
             ),
             SizedBox(width: 8.h),
             Text(
               "Passwords match",
-              style: TextStyle(color: Colors.white, fontSize: 14.sp),
+              style: TextStyle(color: colorScheme.onSurface, fontSize: 14.sp),
             ),
           ],
         ),

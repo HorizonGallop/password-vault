@@ -32,6 +32,10 @@ class SignedOut extends ProfileState {}
 
 class AccountDeleted extends ProfileState {}
 
+class NoInternetConnection extends ProfileState {
+  const NoInternetConnection();
+}
+
 class DeletionScheduled extends ProfileState {
   final DateTime deletionDate;
   const DeletionScheduled(this.deletionDate);

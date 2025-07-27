@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pswrd_vault/core/extensions/size_extension.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/auth/master-password/screen/master_password_screen.dart';
 import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
@@ -17,7 +17,6 @@ class GoogleAuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
       body: BlocConsumer<GoogleAuthCubit, GoogleAuthState>(
         listener: (context, state) {
           if (state is GoogleAuthFailure) {
@@ -27,7 +26,8 @@ class GoogleAuthScreen extends StatelessWidget {
                   state.error,
                   style: const TextStyle(color: Colors.white),
                 ),
-                backgroundColor: Colors.red,
+                backgroundColor: Theme.of(context).colorScheme.error,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           } else if (state is GoogleAuthSuccess) {
@@ -42,7 +42,7 @@ class GoogleAuthScreen extends StatelessWidget {
         builder: (context, state) {
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
                 children: [
                   Expanded(
@@ -50,7 +50,11 @@ class GoogleAuthScreen extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Image.asset('assets/icons/app_icon.png'),
+                            Image.asset(
+                              'assets/icons/app_icon.png',
+                              width: 120.w,
+                              height: 120.w,
+                            ),
                             SizedBox(height: 50.h),
                             SignInCard(
                               label: "Sign in with Google",
@@ -64,22 +68,20 @@ class GoogleAuthScreen extends StatelessWidget {
                               assetPath: 'assets/icons/apple.png',
                               onTap: () {
                                 ToastMessage.show(
+                                  context,
                                   "Apple sign-in coming soon 🍏",
                                 );
                               },
-                              backgroundColor: AppColors.disabledColor,
-                              textColor: Colors.white,
                             ),
                             SignInCard(
                               label: "Sign in with Facebook",
                               assetPath: 'assets/icons/facebook.png',
                               onTap: () {
                                 ToastMessage.show(
+                                  context,
                                   "Facebook sign-in coming soon 📘",
                                 );
                               },
-                              backgroundColor: const Color(0xFF1877F2),
-                              textColor: Colors.white,
                             ),
                             SizedBox(height: 20.h),
                             if (state is GoogleAuthLoading)

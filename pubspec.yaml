@@ -33,10 +33,6 @@ dependencies:
   flutter_secure_storage: ^9.2.4 # Secure storage for sensitive keys (Keychain/Keystore)
   flutter_svg: ^2.2.0 # Render SVG images
   google_nav_bar: ^5.0.7 # Google navigation bar
-  smooth_page_indicator: ^1.2.1 # Page indicator for onboarding
-  lottie: ^3.3.1 # Lottie animations for modern UI
-  introduction_screen: ^3.1.17 # Onboarding screens
-  pinput: ^5.0.1 # OTP input fields
 
   # 🔑 Google Sign-In
   google_sign_in: ^6.2.1 # Google authentication
@@ -44,9 +40,13 @@ dependencies:
   # 💾 Local Storage (Offline Database)
   hive: ^2.2.3 # Lightweight and fast NoSQL database
   hive_flutter: ^1.1.0 # Hive integration with Flutter
+  introduction_screen: ^3.1.17 # Onboarding screens
   local_auth: ^2.3.0 # Biometric authentication (fingerprint/Face ID)
+  lottie: ^3.3.1 # Lottie animations for modern UI
   path_provider: ^2.1.5 # Access device directories for storage
+  pinput: ^5.0.1 # OTP input fields
   share_plus: ^11.0.0 # Share content across apps
+  smooth_page_indicator: ^1.2.1 # Page indicator for onboarding
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
@@ -55,12 +55,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   fluttertoast: ^8.2.12
+  internet_connection_checker: ^3.0.1
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
     - assets/icons/
+    - assets/icons/languages/
     - assets/lottie/
   fonts:
     - family: Cairo
