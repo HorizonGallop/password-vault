@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
 
 class ActionButtons extends StatelessWidget {
   final VoidCallback onSave;
@@ -17,12 +16,15 @@ class ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         ElevatedButton(
           onPressed: isSaveEnabled ? onSave : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             minimumSize: const Size(double.infinity, 50),
           ),
           child: const Text("Save PIN", style: TextStyle(fontSize: 16)),
@@ -33,7 +35,8 @@ class ActionButtons extends StatelessWidget {
           icon: const Icon(Icons.fingerprint),
           label: const Text("Use Biometrics"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
+            backgroundColor: colorScheme.secondary,
+            foregroundColor: colorScheme.onSecondary,
             minimumSize: const Size(double.infinity, 50),
           ),
         ),

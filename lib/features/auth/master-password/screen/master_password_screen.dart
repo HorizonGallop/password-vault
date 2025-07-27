@@ -41,7 +41,6 @@ class MasterPasswordScreen extends StatelessWidget {
           return Stack(
             children: [
               Scaffold(
-                backgroundColor: AppColors.scaffoldBackground,
                 body: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),

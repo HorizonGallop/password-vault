@@ -45,7 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
   String? get selectedCategory => _selectedCategory;
   IconData? get selectedCategoryIcon => _selectedCategoryIcon;
 
-  /// ✅ إظهار أو إخفاء شريط البحث
+  /// ✅ إظهار أو إخفاء شريط الذ   بحث
   void toggleSearchBar() {
     _showSearch = !_showSearch;
     emit(HomeSearchVisibilityChanged(_showSearch));

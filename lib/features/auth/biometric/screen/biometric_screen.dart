@@ -15,7 +15,6 @@ class BiometricAuthScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => BiometricCubit()..authenticate(), // يبدأ التحقق تلقائي
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
         body: SafeArea(
           child: BlocConsumer<BiometricCubit, BiometricState>(
             listener: (context, state) {
@@ -61,9 +60,9 @@ class BiometricAuthScreen extends StatelessWidget {
                             VerifyMasterPasswordScreen.routeName,
                           );
                         },
-                        child: const Text(
+                        child:  Text(
                           'استخدام الماستر باسوورد',
-                          style: TextStyle(color: AppColors.linkText),
+                          style: TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ],

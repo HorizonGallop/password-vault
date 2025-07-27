@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/models/user_model.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/profile/widgets/sign_out_button.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -12,15 +11,19 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return SizedBox(
       width: double.infinity,
       child: Card(
-        color: AppColors.dark.withOpacity(0.5),
+        color: colorScheme.surface.withOpacity(0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
         elevation: 8,
-        shadowColor: AppColors.disabledColor,
+        shadowColor: colorScheme.shadow,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
           child: Column(
@@ -32,14 +35,18 @@ class ProfileHeader extends StatelessWidget {
                     ? NetworkImage(user.photoURL!)
                     : null,
                 child: user.photoURL == null
-                    ? const Icon(Icons.person, size: 56, color: AppColors.gray)
+                    ? Icon(
+                        Icons.person,
+                        size: 56,
+                        color: colorScheme.onSurface.withOpacity(0.5),
+                      )
                     : null,
               ),
               SizedBox(height: 12.h),
               Text(
                 user.displayName ?? 'No Name',
-                style: TextStyle(
-                  color: AppColors.titleText,
+                style: textTheme.titleLarge!.copyWith(
+                  color: colorScheme.onSurface,
                   fontSize: 22.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -47,9 +54,10 @@ class ProfileHeader extends StatelessWidget {
               SizedBox(height: 6.h),
               Text(
                 user.email ?? '',
-                style: TextStyle(color: AppColors.titleText.withOpacity(0.5)),
+                style: textTheme.bodyMedium!.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.5),
+                ),
               ),
-
               SizedBox(height: 16.h),
               SignOutButton(onSignOut: onSignOut),
             ],

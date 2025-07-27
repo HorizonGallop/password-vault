@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/navigation/screen/bottom_nav_screen.dart';
+import 'package:pswrd_vault/features/settings/cubit/settings_cubit.dart';
 import 'package:pswrd_vault/features/widgets/custom_button.dart';
 import 'package:pswrd_vault/features/widgets/custom_input_field.dart';
 import 'package:pswrd_vault/features/widgets/loading_widget.dart';
@@ -42,10 +43,11 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
             state is MasterPasswordVerifying ||
             state is BiometricAuthenticating;
 
+        final useBiometric = context.watch<SettingsCubit>().state.useBiometric;
+
         return Stack(
           children: [
             Scaffold(
-              backgroundColor: AppColors.scaffoldBackground,
               resizeToAvoidBottomInset: true,
               body: SafeArea(
                 child: Padding(
@@ -78,22 +80,24 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
                                 backgroundColor: AppColors.primary,
                               ),
                               SizedBox(height: 20.h),
-                              Text(
-                                "or use your fingerprint",
-                                style: TextStyle(fontSize: 12.sp),
-                              ),
-                              SizedBox(height: 10.h),
-                              GestureDetector(
-                                onTap: () {
-                                  context
-                                      .read<VerifyMasterPasswordCubit>()
-                                      .authenticateWithBiometric();
-                                },
-                                child: Image.asset(
-                                  "assets/icons/fingerprint.png",
-                                  scale: 10,
+                              if (useBiometric) ...[
+                                Text(
+                                  "or use your fingerprint",
+                                  style: TextStyle(fontSize: 12.sp),
                                 ),
-                              ),
+                                SizedBox(height: 10.h),
+                                GestureDetector(
+                                  onTap: () {
+                                    context
+                                        .read<VerifyMasterPasswordCubit>()
+                                        .authenticateWithBiometric();
+                                  },
+                                  child: Image.asset(
+                                    "assets/icons/fingerprint.png",
+                                    scale: 10,
+                                  ),
+                                ),
+                              ],
                               SizedBox(height: 40.h),
                             ],
                           ),

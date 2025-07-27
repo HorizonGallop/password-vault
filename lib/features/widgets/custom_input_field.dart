@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
 
 class CustomInputField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
   final bool obscureText;
-  final Color fillColor;
-  final Color textColor;
-  final Color hintColor;
+  final Color? fillColor;
+  final Color? textColor;
+  final Color? hintColor;
 
   const CustomInputField({
     super.key,
@@ -17,23 +16,32 @@ class CustomInputField extends StatelessWidget {
     required this.controller,
     this.onChanged,
     this.obscureText = true,
-    this.fillColor = AppColors.inputBackground,
-    this.textColor = AppColors.inputText,
-    this.hintColor = AppColors.hintText,
+    this.fillColor,
+    this.textColor,
+    this.hintColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final effectiveFillColor =
+        fillColor ?? colorScheme.surfaceVariant.withOpacity(0.1);
+    final effectiveTextColor = textColor ?? colorScheme.onSurface;
+    final effectiveHintColor =
+        hintColor ?? colorScheme.onSurface.withOpacity(0.5);
+
     return TextField(
       controller: controller,
       obscureText: obscureText,
       onChanged: onChanged,
-      style: TextStyle(color: textColor),
+      style: TextStyle(color: effectiveTextColor),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: hintColor),
+        hintStyle: TextStyle(color: effectiveHintColor),
         filled: true,
-        fillColor: fillColor,
+        fillColor: effectiveFillColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,

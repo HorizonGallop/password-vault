@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
-import 'package:pswrd_vault/core/utils/app_colors.dart';
 
 class DeleteAccountButton extends StatelessWidget {
   final VoidCallback onDeleteAccount;
@@ -9,15 +8,19 @@ class DeleteAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ElevatedButton.icon(
       onPressed: onDeleteAccount,
       icon: const Icon(Icons.delete_forever),
       label: const Text('حذف الحساب نهائيًا'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.error,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.error,
+        foregroundColor: colorScheme.onError,
         padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
       ),
     );
   }
