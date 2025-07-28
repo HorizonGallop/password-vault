@@ -5,14 +5,11 @@ sealed class HomeState {}
 
 final class HomeInitial extends HomeState {}
 
-/// ✅ البحث
-final class HomeSearchVisibilityChanged extends HomeState {
-  final bool showSearch;
-  HomeSearchVisibilityChanged(this.showSearch);
-}
-
 /// ✅ حفظ كلمة السر
 final class HomePasswordSaved extends HomeState {}
+
+/// ✅ تعديل كلمة السر
+final class HomePasswordUpdated extends HomeState {}
 
 /// ✅ عرض/إخفاء كلمة السر
 final class HomePasswordVisibilityChanged extends HomeState {

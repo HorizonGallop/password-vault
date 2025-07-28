@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pswrd_vault/core/theme/cubit/theme_cubit.dart';
 import 'package:pswrd_vault/features/settings/cubit/settings_cubit.dart';
 import 'package:pswrd_vault/features/settings/widgets/3d_drop_down_menu.dart';
+import 'package:pswrd_vault/features/widgets/app_info_card.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -14,7 +15,6 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
 
     return SafeArea(
       child: Scaffold(
@@ -32,12 +32,11 @@ class SettingsScreen extends StatelessWidget {
               // ✅ Dark Mode
               BlocBuilder<ThemeCubit, ThemeData>(
                 builder: (context, themeState) {
-                  return _buildSettingCard(
-                    context: context,
-                    icon: Icons.brightness_6,
-                    iconColor: Colors.amber,
+                  return AppInfoCard(
                     title: 'Dark Mode',
                     subtitle: 'Switch between Light & Dark theme',
+                    icon: Icons.brightness_6,
+                    iconColor: Colors.amber,
                     trailing: Switch(
                       value: themeState.brightness == Brightness.dark,
                       onChanged: (_) =>
@@ -53,12 +52,11 @@ class SettingsScreen extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     previous.useBiometric != current.useBiometric,
                 builder: (context, state) {
-                  return _buildSettingCard(
-                    context: context,
-                    icon: Icons.fingerprint,
-                    iconColor: Colors.green,
+                  return AppInfoCard(
                     title: 'Fingerprint Login',
                     subtitle: 'Enable or disable biometric login',
+                    icon: Icons.fingerprint,
+                    iconColor: Colors.green,
                     trailing: Switch(
                       value: state.useBiometric,
                       onChanged: (value) {
@@ -75,12 +73,11 @@ class SettingsScreen extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     previous.language != current.language,
                 builder: (context, state) {
-                  return _buildSettingCard(
-                    context: context,
-                    icon: Icons.language,
-                    iconColor: Colors.blueAccent,
+                  return AppInfoCard(
                     title: 'Language',
                     subtitle: 'Select your preferred language',
+                    icon: Icons.language,
+                    iconColor: Colors.blueAccent,
                     trailing: SizedBox(
                       width: 100.w,
                       child: Align(
@@ -100,8 +97,7 @@ class SettingsScreen extends StatelessWidget {
                             ),
                           ],
                           onChanged: (val) {
-                            if (val != null)
-                              context.read<SettingsCubit>().changeLanguage(val);
+                            context.read<SettingsCubit>().changeLanguage(val);
                           },
                         ),
                       ),
@@ -112,12 +108,11 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(height: 16.h),
 
               // ✅ About App
-              _buildSettingCard(
-                context: context,
-                icon: Icons.info_outline,
-                iconColor: Colors.purple,
+              AppInfoCard(
                 title: 'About App',
                 subtitle: 'Learn more about this application',
+                icon: Icons.info_outline,
+                iconColor: Colors.purple,
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 16.sp,
@@ -130,12 +125,11 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(height: 16.h),
 
               // ✅ Share App
-              _buildSettingCard(
-                context: context,
-                icon: Icons.share_rounded,
-                iconColor: Colors.orangeAccent,
+              AppInfoCard(
                 title: 'Share App',
                 subtitle: 'Invite friends to use this app',
+                icon: Icons.share_rounded,
+                iconColor: Colors.orangeAccent,
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 16.sp,
@@ -149,76 +143,6 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingCard({
-    required BuildContext context,
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    Widget? trailing,
-    VoidCallback? onTap,
-  }) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 8.h),
-        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            BoxShadow(
-              color: theme.shadowColor.withOpacity(0.15),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8.r),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(icon, color: iconColor, size: 28.sp),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle,
-                    style: textTheme.bodySmall?.copyWith(
-                      fontSize: 12.sp,
-                      color: theme.hintColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            trailing ?? const SizedBox(),
-          ],
         ),
       ),
     );

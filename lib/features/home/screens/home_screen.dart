@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:pswrd_vault/features/home/widgets/add_password_widget.dart';
+import 'package:pswrd_vault/features/home/screens/password_screen.dart';
+import 'package:pswrd_vault/features/home/widgets/password_form_dialog.dart';
 import 'package:pswrd_vault/features/home/widgets/header_widget.dart';
 import '../cubit/home_cubit.dart';
 import '../widgets/category_card.dart';
@@ -33,7 +34,6 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: colorScheme.background,
             body: Column(
               children: [
-                // الشريط العلوي مع البحث والإضافة
                 HomeHeaderWidget(
                   onAddPressed: () {
                     showModalBottomSheet(
@@ -41,10 +41,8 @@ class HomeScreen extends StatelessWidget {
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                       builder: (sheetContext) {
-                        return BlocProvider.value(
-                          value: context.read<HomeCubit>(),
-                          child: const AddPasswordDialog(),
-                        );
+                        final homeCubit = context.read<HomeCubit>();
+                        return PasswordFormDialog(homeCubit: homeCubit);
                       },
                     );
                   },
@@ -94,11 +92,24 @@ class HomeScreen extends StatelessWidget {
                         groupedPasswords.putIfAbsent(category, () => []);
                         groupedPasswords[category]!.add(
                           PasswordCard(
-                            key: ValueKey('password_${pwd.id}'),
                             serviceName: pwd.service,
                             username: pwd.username,
                             description: pwd.note ?? '',
                             icon: Icons.lock,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<HomeCubit>(),
+                                    child: PasswordDetailsScreen(
+                                      passwordModel: pwd,
+                                      masterPassword: masterPassword,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         );
                       }

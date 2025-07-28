@@ -1,51 +1,29 @@
 import 'package:flutter/material.dart';
 
-class PasswordCard extends StatefulWidget {
+class PasswordCard extends StatelessWidget {
   final String serviceName;
   final String username;
   final String description;
   final IconData icon;
+  final VoidCallback onTap;
 
   const PasswordCard({
     super.key,
     required this.serviceName,
     required this.username,
     required this.description,
+    required this.onTap,
     this.icon = Icons.lock, // أيقونة افتراضية
   });
-
-  @override
-  State<PasswordCard> createState() => _PasswordCardState();
-}
-
-class _PasswordCardState extends State<PasswordCard>
-    with SingleTickerProviderStateMixin {
-  double _opacity = 0.0;
-  double _translateY = 20.0;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        _opacity = 1.0;
-        _translateY = 0.0;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AnimatedOpacity(
-      opacity: _opacity,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        transform: Matrix4.translationValues(0, _translateY, 0),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -77,7 +55,7 @@ class _PasswordCardState extends State<PasswordCard>
                 shape: BoxShape.circle,
               ),
               padding: const EdgeInsets.all(10),
-              child: Icon(widget.icon, color: Colors.white, size: 24),
+              child: Icon(icon, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -85,9 +63,9 @@ class _PasswordCardState extends State<PasswordCard>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.serviceName,
-                    maxLines: 1, // سطر واحد فقط
-                    overflow: TextOverflow.ellipsis, // لو طويل يعمل نقاط (...)
+                    serviceName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -96,7 +74,7 @@ class _PasswordCardState extends State<PasswordCard>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.username,
+                    username,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -105,8 +83,8 @@ class _PasswordCardState extends State<PasswordCard>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.description,
-                    maxLines: 2, // نسمح بسطرين للوصف
+                    description,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withOpacity(0.7),

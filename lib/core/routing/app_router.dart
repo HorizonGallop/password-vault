@@ -7,6 +7,7 @@ import 'package:pswrd_vault/features/auth/biometric/screen/biometric_screen.dart
 import 'package:pswrd_vault/features/auth/verify-password/cubit/verify_master_password_cubit.dart';
 import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/home/screens/home_screen.dart';
+import 'package:pswrd_vault/features/home/screens/password_screen.dart';
 import 'package:pswrd_vault/features/navigation/screen/bottom_nav_screen.dart';
 import 'package:pswrd_vault/features/onboarding/cubit/onboarding_cubit.dart';
 import 'package:pswrd_vault/features/onboarding/screens/onboarding_screen.dart';
@@ -53,6 +54,15 @@ class AppRouter {
         final masterPassword = settings.arguments as String;
         return MaterialPageRoute(
           builder: (_) => BottomNavScreen(masterPassword: masterPassword),
+        );
+
+      case PasswordDetailsScreen.routeName:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => PasswordDetailsScreen(
+            passwordModel: args['passwordModel'],
+            masterPassword: args['masterPassword'],
+          ),
         );
 
       default:
