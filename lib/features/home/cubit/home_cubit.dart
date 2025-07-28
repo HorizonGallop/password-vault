@@ -11,7 +11,6 @@ class HomeCubit extends Cubit<HomeState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String masterPassword;
 
-  bool _showSearch = false;
   bool _isPasswordVisible = false;
 
   IconData? _selectedPasswordIcon;
@@ -112,9 +111,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   // getters للوصول إلى الحالات الخاصة
-  bool get isSearchVisible => _showSearch;
   bool get isPasswordVisible => _isPasswordVisible;
-
 
   IconData? get selectedPasswordIcon => _selectedPasswordIcon;
   String? get selectedCategory => _selectedCategory;
@@ -205,6 +202,50 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  /// تعديل كلمة سر موجودة
+  Future<void> updatePassword({
+    required String id,
+    required String service,
+    required String email,
+    required String username,
+    required String password,
+    IconData? passwordIcon,
+    String? category,
+    IconData? categoryIcon,
+    String? note,
+  }) async {
+    try {
+      emit(HomeLoading());
+
+      final encryptedEmail = EncryptionHelper.encryptText(
+        email,
+        masterPassword,
+      );
+      final encryptedPassword = EncryptionHelper.encryptText(
+        password,
+        masterPassword,
+      );
+
+      final updatedData = {
+        'service': service,
+        'email': encryptedEmail,
+        'username': username,
+        'password': encryptedPassword,
+        'category': category ?? 'Other',
+        'passwordIcon': passwordIcon?.codePoint.toString(),
+        'categoryIcon': categoryIcon?.codePoint.toString(),
+        'note': note,
+        'updatedAt': DateTime.now(),
+      };
+
+      await _firestore.collection('passwords').doc(id).update(updatedData);
+
+      emit(HomePasswordSaved());
+    } catch (e) {
+      emit(HomeError("فشل في تحديث كلمة السر: $e"));
+    }
+  }
+
   /// الاستماع المباشر لتحديثات كلمات السر من Firestore
   void listenPasswords() {
     emit(HomeLoading());
@@ -238,6 +279,7 @@ class HomeCubit extends Cubit<HomeState> {
 
               return PasswordModel.fromMap({
                 ...data,
+                'id': doc.id,
                 'email': decryptedEmail,
                 'password': decryptedPassword,
               });
