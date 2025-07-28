@@ -1,11 +1,16 @@
-import 'dart:math';
+import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+import 'package:pswrd_vault/core/helper/encryption_helper.dart';
+import 'package:pswrd_vault/core/models/password_model.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String masterPassword;
+
   bool _showSearch = false;
   bool _isPasswordVisible = false;
 
@@ -13,7 +18,12 @@ class HomeCubit extends Cubit<HomeState> {
   String? _selectedCategory;
   IconData? _selectedCategoryIcon;
 
-  /// ✅ أيقونات متاحة للاختيار
+  List<PasswordModel> _passwords = [];
+  List<PasswordModel> get passwords => _passwords;
+
+  StreamSubscription? _passwordsSubscription;
+
+  /// قائمة أيقونات متاحة لكلمات السر
   final List<IconData> availableIcons = [
     Icons.lock,
     Icons.vpn_key,
@@ -27,56 +37,130 @@ class HomeCubit extends Cubit<HomeState> {
     Icons.folder,
   ];
 
-  /// ✅ الفئات المتاحة
+  /// قائمة الفئات المتاحة
   final List<String> categories = [
-    "مواقع",
-    "ألعاب",
-    "خدمات",
-    "عمل",
-    "تسوق",
-    "بنوك",
+    "Social Media",
+    "Messaging",
+    "Work",
+    "Productivity",
+    "Collaboration",
+    "Shopping",
+    "Banks",
+    "Payments",
+    "Websites",
+    "Apps",
+    "Forums",
+    "Games",
+    "Streaming",
+    "Music",
+    "Video",
+    "Education",
+    "Courses",
+    "E-learning",
+    "Health",
+    "Fitness",
+    "Travel",
+    "Cloud Storage",
+    "Email",
+    "Crypto & Wallets",
+    "Government & Services",
+    "Devices & Routers",
+    "Hosting & Domains",
+    "Other",
   ];
 
-  HomeCubit() : super(HomeInitial());
+  /// أيقونات الفئات
+  final Map<String, IconData> categoryIcons = {
+    "Social Media": Icons.people,
+    "Messaging": Icons.message,
+    "Work": Icons.work,
+    "Productivity": Icons.task,
+    "Collaboration": Icons.group_work,
+    "Shopping": Icons.shopping_cart,
+    "Banks": Icons.account_balance,
+    "Payments": Icons.payment,
+    "Websites": Icons.web,
+    "Apps": Icons.apps,
+    "Forums": Icons.forum,
+    "Games": Icons.sports_esports,
+    "Streaming": Icons.live_tv,
+    "Music": Icons.music_note,
+    "Video": Icons.videocam,
+    "Education": Icons.school,
+    "Courses": Icons.menu_book,
+    "E-learning": Icons.computer,
+    "Health": Icons.health_and_safety,
+    "Fitness": Icons.fitness_center,
+    "Travel": Icons.flight_takeoff,
+    "Cloud Storage": Icons.cloud,
+    "Email": Icons.email,
+    "Crypto & Wallets": Icons.currency_bitcoin,
+    "Government & Services": Icons.account_balance_wallet,
+    "Devices & Routers": Icons.router,
+    "Hosting & Domains": Icons.domain,
+    "Other": Icons.more_horiz,
+  };
 
+  /// حالة التوسيع لكل فئة (مفتوح أو مغلق)
+  final Map<String, bool> _expandedCategories = {};
+
+  HomeCubit({required this.masterPassword}) : super(HomeInitial()) {
+    // تهيئة حالة التوسيع لكل فئة
+    for (var category in categories) {
+      _expandedCategories[category] = false;
+    }
+  }
+
+  // getters للوصول إلى الحالات الخاصة
   bool get isSearchVisible => _showSearch;
   bool get isPasswordVisible => _isPasswordVisible;
+
+
   IconData? get selectedPasswordIcon => _selectedPasswordIcon;
   String? get selectedCategory => _selectedCategory;
   IconData? get selectedCategoryIcon => _selectedCategoryIcon;
+  Map<String, bool> get expandedCategories => _expandedCategories;
 
-  /// ✅ إظهار أو إخفاء شريط الذ   بحث
-  void toggleSearchBar() {
-    _showSearch = !_showSearch;
-    emit(HomeSearchVisibilityChanged(_showSearch));
+  /// إعادة ترتيب كلمات السر حسب الفئات
+  Map<String, List<PasswordModel>> get passwordsGroupedByCategory {
+    final Map<String, List<PasswordModel>> map = {};
+    for (var pwd in _passwords) {
+      final category = pwd.category;
+      map.putIfAbsent(category, () => []);
+      map[category]!.add(pwd);
+    }
+    return map;
   }
 
-  /// ✅ إظهار أو إخفاء كلمة المرور
+  /// تبديل رؤية كلمة السر
   void togglePasswordVisibility() {
     _isPasswordVisible = !_isPasswordVisible;
     emit(HomePasswordVisibilityChanged(_isPasswordVisible));
   }
 
-  /// ✅ اختيار أيقونة لكلمة السر
+  /// تحديد أيقونة كلمة السر المختارة
   void selectPasswordIcon(IconData icon) {
     _selectedPasswordIcon = icon;
     emit(HomePasswordIconChanged(icon));
   }
 
-  /// ✅ اختيار الفئة
+  /// تحديد الفئة المختارة وتحديث الأيقونة الخاصة بها
   void selectCategory(String category) {
     _selectedCategory = category;
+    _selectedCategoryIcon = categoryIcons[category];
     emit(HomeCategoryChanged(category));
   }
 
-  /// ✅ اختيار أيقونة للفئة
-  void selectCategoryIcon(IconData icon) {
-    _selectedCategoryIcon = icon;
-    emit(HomeCategoryIconChanged(icon));
+  /// تبديل حالة التوسيع لفئة معينة
+  void toggleCategoryExpanded(String category) {
+    if (_expandedCategories.containsKey(category)) {
+      _expandedCategories[category] = !_expandedCategories[category]!;
+      emit(HomeCategoriesUpdated(Map.from(_expandedCategories)));
+    }
   }
 
-  /// ✅ حفظ كلمة المرور
-  void savePassword({
+  /// حفظ كلمة سر جديدة مع تشفير الحقول الحساسة
+  Future<void> savePassword({
     required String service,
     required String email,
     required String username,
@@ -85,19 +169,91 @@ class HomeCubit extends Cubit<HomeState> {
     String? category,
     IconData? categoryIcon,
     String? note,
-  }) {
-    // هنا هتحفظ البيانات في Firebase أو Hive حسب مشروعك
-    emit(HomePasswordSaved());
+  }) async {
+    try {
+      emit(HomeLoading());
+
+      final id = _firestore.collection('passwords').doc().id;
+
+      final encryptedEmail = EncryptionHelper.encryptText(
+        email,
+        masterPassword,
+      );
+      final encryptedPassword = EncryptionHelper.encryptText(
+        password,
+        masterPassword,
+      );
+
+      final model = PasswordModel(
+        id: id,
+        service: service,
+        email: encryptedEmail,
+        username: username,
+        password: encryptedPassword,
+        category: category ?? 'Other',
+        passwordIcon: passwordIcon?.codePoint.toString(),
+        categoryIcon: categoryIcon?.codePoint.toString(),
+        note: note,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await _firestore.collection('passwords').doc(id).set(model.toMap());
+      emit(HomePasswordSaved());
+    } catch (e) {
+      emit(HomeError("فشل في حفظ كلمة السر: $e"));
+    }
   }
 
-  /// ✅ توليد كلمة مرور عشوائية
-  String generateRandomPassword({int length = 12}) {
-    const chars =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#\$%&*';
-    final rand = Random();
-    return List.generate(
-      length,
-      (index) => chars[rand.nextInt(chars.length)],
-    ).join();
+  /// الاستماع المباشر لتحديثات كلمات السر من Firestore
+  void listenPasswords() {
+    emit(HomeLoading());
+
+    _passwordsSubscription?.cancel();
+
+    _passwordsSubscription = _firestore
+        .collection('passwords')
+        .snapshots()
+        .listen(
+          (snapshot) {
+            _passwords = snapshot.docs.map((doc) {
+              final data = doc.data();
+
+              String decryptedEmail = "";
+              String decryptedPassword = "";
+
+              try {
+                decryptedEmail = EncryptionHelper.decryptText(
+                  data['email'],
+                  masterPassword,
+                );
+                decryptedPassword = EncryptionHelper.decryptText(
+                  data['password'],
+                  masterPassword,
+                );
+              } catch (_) {
+                decryptedEmail = "****";
+                decryptedPassword = "****";
+              }
+
+              return PasswordModel.fromMap({
+                ...data,
+                'email': decryptedEmail,
+                'password': decryptedPassword,
+              });
+            }).toList();
+
+            emit(HomePasswordsLoaded(List.from(_passwords)));
+          },
+          onError: (error) {
+            emit(HomeError("فشل في تحميل البيانات: $error"));
+          },
+        );
+  }
+
+  @override
+  Future<void> close() {
+    _passwordsSubscription?.cancel();
+    return super.close();
   }
 }

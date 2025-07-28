@@ -27,7 +27,10 @@ class AppRouter {
         );
 
       case HomeScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        final masterPassword = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => HomeScreen(masterPassword: masterPassword),
+        );
 
       case GoogleAuthScreen.routeName:
         return MaterialPageRoute(builder: (_) => const GoogleAuthScreen());
@@ -47,7 +50,10 @@ class AppRouter {
         );
 
       case BottomNavScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const BottomNavScreen());
+        final masterPassword = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => BottomNavScreen(masterPassword: masterPassword),
+        );
 
       default:
         return MaterialPageRoute(

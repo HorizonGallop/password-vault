@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pswrd_vault/core/extensions/size_extension.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
@@ -6,7 +7,7 @@ import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_p
 import 'package:pswrd_vault/features/widgets/custom_button.dart';
 import 'package:pswrd_vault/features/widgets/custom_input_field.dart';
 import 'package:pswrd_vault/features/widgets/loading_widget.dart';
-import 'package:pswrd_vault/features/widgets/password_requirements.dart';
+import 'package:pswrd_vault/features/auth/widgets/password_requirements.dart';
 import '../cubit/master_password_cubit.dart';
 import '../cubit/master_password_state.dart';
 
@@ -36,7 +37,8 @@ class MasterPasswordScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          bool isLoading = state is MasterPasswordSaving;
+          final cubit = context.read<MasterPasswordCubit>();
+          final isLoading = state is MasterPasswordSaving;
 
           return Stack(
             children: [
@@ -77,35 +79,94 @@ class MasterPasswordScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 40.h),
 
-                        /// ✅ Password Fields
+                        /// 🔐 Password Field
                         CustomInputField(
                           hintText: "Master Password",
                           controller: passwordController,
+                          obscureText: !cubit.isPasswordVisible,
                           onChanged: (_) {
-                            context
-                                .read<MasterPasswordCubit>()
-                                .validateMasterPassword(
-                                  passwordController.text,
-                                  confirmController.text,
-                                );
+                            cubit.validateMasterPassword(
+                              passwordController.text,
+                              confirmController.text,
+                            );
                           },
-                        ),
-                        SizedBox(height: 16.h),
-                        CustomInputField(
-                          hintText: "Confirm Master Password",
-                          controller: confirmController,
-                          onChanged: (_) {
-                            context
-                                .read<MasterPasswordCubit>()
-                                .validateMasterPassword(
-                                  passwordController.text,
-                                  confirmController.text,
-                                );
-                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              cubit.isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: AppColors.primary,
+                            ),
+                            onPressed: cubit.togglePasswordVisibility,
+                          ),
                         ),
                         SizedBox(height: 16.h),
 
-                        /// ✅ Password Requirements Widget
+                        /// 🔐 Confirm Password Field
+                        CustomInputField(
+                          hintText: "Confirm Master Password",
+                          controller: confirmController,
+                          obscureText: !cubit.isConfirmVisible,
+                          onChanged: (_) {
+                            cubit.validateMasterPassword(
+                              passwordController.text,
+                              confirmController.text,
+                            );
+                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              cubit.isConfirmVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: AppColors.primary,
+                            ),
+                            onPressed: cubit.toggleConfirmVisibility,
+                          ),
+                        ),
+                        SizedBox(height: 24.h),
+
+                        /// أزرار توليد ونسخ كلمة السر بشكل أفقي تحت الحقول
+                        /// صف الأيقونات لتوليد ونسخ كلمة السر
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              tooltip: "Generate Strong Password",
+                              color: AppColors.primary,
+                              icon: const Icon(Icons.refresh),
+                              onPressed: () {
+                                final newPassword = cubit
+                                    .generateSecurePassword();
+                                passwordController.text = newPassword;
+                                confirmController.text = newPassword;
+                                cubit.validateMasterPassword(
+                                  newPassword,
+                                  newPassword,
+                                );
+                              },
+                            ),
+                            SizedBox(width: 8.w),
+                            IconButton(
+                              tooltip: "Copy Password",
+                              color: AppColors.primary,
+                              icon: const Icon(Icons.copy),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: passwordController.text),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Password copied!"),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 32.h),
+
+                        /// ✅ Password Requirements
                         BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
                           builder: (context, state) {
                             if (state is MasterPasswordValidationState) {
@@ -114,15 +175,12 @@ class MasterPasswordScreen extends StatelessWidget {
                             return const SizedBox.shrink();
                           },
                         ),
-
                         SizedBox(height: 60.h),
 
                         /// ✅ Save Button
                         BlocBuilder<MasterPasswordCubit, MasterPasswordState>(
                           builder: (context, state) {
                             bool isValid = false;
-                            String password = passwordController.text;
-
                             if (state is MasterPasswordValidationState) {
                               isValid = state.allValid;
                             }
@@ -131,9 +189,9 @@ class MasterPasswordScreen extends StatelessWidget {
                               text: "Lock Vault",
                               onPressed: isValid && !isLoading
                                   ? () {
-                                      context
-                                          .read<MasterPasswordCubit>()
-                                          .saveMasterPassword(password);
+                                      cubit.saveMasterPassword(
+                                        passwordController.text,
+                                      );
                                     }
                                   : null,
                               backgroundColor: AppColors.primary,
@@ -147,7 +205,7 @@ class MasterPasswordScreen extends StatelessWidget {
                 ),
               ),
 
-              /// ✅ Loading Overlay
+              /// 🔄 Loading Overlay
               if (isLoading) const LoadingOverlay(),
             ],
           );

@@ -18,6 +18,8 @@ class MasterPasswordValidationState extends MasterPasswordState {
   final bool hasNumber;
   final bool hasSpecialChar;
   final bool isMatch;
+  final bool isPasswordVisible;
+  final bool isConfirmPasswordVisible;
 
   const MasterPasswordValidationState({
     required this.password,
@@ -28,6 +30,8 @@ class MasterPasswordValidationState extends MasterPasswordState {
     required this.hasNumber,
     required this.hasSpecialChar,
     required this.isMatch,
+    this.isPasswordVisible = false,
+    this.isConfirmPasswordVisible = false,
   });
 
   bool get allValid =>
@@ -38,17 +42,46 @@ class MasterPasswordValidationState extends MasterPasswordState {
       hasSpecialChar &&
       isMatch;
 
+  MasterPasswordValidationState copyWith({
+    String? password,
+    String? confirmPassword,
+    bool? hasMinLength,
+    bool? hasUpperCase,
+    bool? hasLowerCase,
+    bool? hasNumber,
+    bool? hasSpecialChar,
+    bool? isMatch,
+    bool? isPasswordVisible,
+    bool? isConfirmPasswordVisible,
+  }) {
+    return MasterPasswordValidationState(
+      password: password ?? this.password,
+      confirmPassword: confirmPassword ?? this.confirmPassword,
+      hasMinLength: hasMinLength ?? this.hasMinLength,
+      hasUpperCase: hasUpperCase ?? this.hasUpperCase,
+      hasLowerCase: hasLowerCase ?? this.hasLowerCase,
+      hasNumber: hasNumber ?? this.hasNumber,
+      hasSpecialChar: hasSpecialChar ?? this.hasSpecialChar,
+      isMatch: isMatch ?? this.isMatch,
+      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+      isConfirmPasswordVisible:
+          isConfirmPasswordVisible ?? this.isConfirmPasswordVisible,
+    );
+  }
+
   @override
   List<Object?> get props => [
-        password,
-        confirmPassword,
-        hasMinLength,
-        hasUpperCase,
-        hasLowerCase,
-        hasNumber,
-        hasSpecialChar,
-        isMatch,
-      ];
+    password,
+    confirmPassword,
+    hasMinLength,
+    hasUpperCase,
+    hasLowerCase,
+    hasNumber,
+    hasSpecialChar,
+    isMatch,
+    isPasswordVisible,
+    isConfirmPasswordVisible,
+  ];
 }
 
 class MasterPasswordSaving extends MasterPasswordState {}
