@@ -23,7 +23,13 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
     return BlocConsumer<VerifyMasterPasswordCubit, VerifyMasterPasswordState>(
       listener: (context, state) {
         if (state is MasterPasswordVerified || state is BiometricSuccess) {
-          Navigator.pushReplacementNamed(context, BottomNavScreen.routeName);
+          final enteredPassword = passwordController.text;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BottomNavScreen(masterPassword: enteredPassword),
+            ),
+          );
         } else if (state is MasterPasswordVerifyFailed ||
             state is VerifyMasterPasswordError ||
             state is BiometricFailure) {
@@ -38,6 +44,7 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
           ).showSnackBar(SnackBar(content: Text(error)));
         }
       },
+
       builder: (context, state) {
         final isLoading =
             state is MasterPasswordVerifying ||
@@ -58,7 +65,6 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              SizedBox(height: 80.h),
                               Lottie.asset('assets/lottie/start.json'),
                               SizedBox(height: 40.h),
                               CustomInputField(

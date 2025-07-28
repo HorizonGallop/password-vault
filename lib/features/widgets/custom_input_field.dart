@@ -9,6 +9,7 @@ class CustomInputField extends StatelessWidget {
   final Color? fillColor;
   final Color? textColor;
   final Color? hintColor;
+  final Widget? suffixIcon;
 
   const CustomInputField({
     super.key,
@@ -19,6 +20,7 @@ class CustomInputField extends StatelessWidget {
     this.fillColor,
     this.textColor,
     this.hintColor,
+    this.suffixIcon,
   });
 
   @override
@@ -46,6 +48,7 @@ class CustomInputField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
         ),
+        suffixIcon: suffixIcon,
       ),
     );
   }

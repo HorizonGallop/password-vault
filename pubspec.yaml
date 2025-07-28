@@ -8,13 +8,15 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  bloc: ^9.0.0
   cloud_firestore: ^5.4.4 # Firestore NoSQL database for encrypted data
   crypto: ^3.0.6 # Cryptographic hash functions (SHA256, etc.)
-  cupertino_icons: ^1.0.8 # Default iOS icons for Flutter apps
 
-  # 🔐 Security (Encryption & Biometrics)
+  cupertino_icons: ^1.0.8 # 🌙 Default iOS icons for Flutter apps
+
+  # 🔐 Security (Encryption, Hashing & Biometrics)
   encrypt: ^5.0.3 # AES/RSA encryption and decryption
-  equatable: ^2.0.5 # Value equality for states in BLoC
+  equatable: ^2.0.5 # Value equality for BLoC states
 
   # 📂 File Management & Sharing
   file_picker: ^10.2.0 # Pick files from local storage
@@ -49,12 +51,14 @@ dependencies:
   smooth_page_indicator: ^1.2.1 # Page indicator for onboarding
 
 dev_dependencies:
+  flutter_iconpicker: ^3.3.3
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^5.0.0
   flutter_native_splash: ^2.4.6
   flutter_test:
     sdk: flutter
   fluttertoast: ^8.2.12
+  font_awesome_flutter: ^10.8.0
   internet_connection_checker: ^3.0.1
 
 flutter:
@@ -64,6 +68,7 @@ flutter:
     - assets/icons/
     - assets/icons/languages/
     - assets/lottie/
+
   fonts:
     - family: Cairo
       fonts:

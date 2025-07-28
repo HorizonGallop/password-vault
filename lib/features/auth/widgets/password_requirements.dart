@@ -13,7 +13,7 @@ class PasswordRequirementsWidget extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     final requirements = [
-      _Requirement("At least 12 characters", state.hasMinLength),
+      _Requirement("At least 16 characters", state.hasMinLength),
       _Requirement("At least one uppercase letter", state.hasUpperCase),
       _Requirement("At least one lowercase letter", state.hasLowerCase),
       _Requirement("At least one number", state.hasNumber),

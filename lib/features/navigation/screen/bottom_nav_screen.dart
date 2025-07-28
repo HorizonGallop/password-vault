@@ -12,18 +12,28 @@ import 'package:pswrd_vault/features/settings/screen/settings_screen.dart';
 class BottomNavScreen extends StatelessWidget {
   static const routeName = '/bottom-nav-screen';
 
-  const BottomNavScreen({super.key});
+  final String masterPassword; // ✅ استقبل الماستر باسوورد هنا
+
+  const BottomNavScreen({super.key, required this.masterPassword});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final pages = const [ProfileScreen(), HomeScreen(), SettingsScreen()];
+
+    /// ✅ الصفحات (مرر الماستر باسوورد للـ HomeScreen)
+    final pages = [
+      const ProfileScreen(),
+      HomeScreen(masterPassword: masterPassword), // ✅ هنا
+      const SettingsScreen(),
+    ];
 
     return MultiBlocProvider(
       providers: [
         BlocProvider<NavigationCubit>(create: (_) => NavigationCubit()),
-        BlocProvider<HomeCubit>(create: (_) => HomeCubit()),
+        BlocProvider<HomeCubit>(
+          create: (_) => HomeCubit(masterPassword: masterPassword), // ✅ هنا
+        ),
       ],
       child: Scaffold(
         body: BlocBuilder<NavigationCubit, NavigationState>(
@@ -68,8 +78,7 @@ class BottomNavScreen extends StatelessWidget {
                         vertical: 12.h,
                       ),
                       duration: const Duration(milliseconds: 300),
-                      tabBackgroundColor:
-                          colorScheme.primary, // ✅ خلفية التبويب النشط
+                      tabBackgroundColor: colorScheme.primary,
                       selectedIndex: currentIndex,
                       onTabChange: (index) =>
                           context.read<NavigationCubit>().changeTab(index),

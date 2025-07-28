@@ -5,7 +5,7 @@ import 'package:pswrd_vault/core/utils/app_colors.dart';
 import 'package:pswrd_vault/features/auth/master-password/screen/master_password_screen.dart';
 import 'package:pswrd_vault/features/auth/verify-password/screen/verify_master_password_screen.dart';
 import 'package:pswrd_vault/features/widgets/powered_by_widget.dart';
-import 'package:pswrd_vault/features/widgets/sign_in_card.dart';
+import 'package:pswrd_vault/features/auth/widgets/sign_in_card.dart';
 import 'package:pswrd_vault/features/widgets/toast_message_widget.dart';
 import '../cubit/google_auth_cubit.dart';
 import '../cubit/google_auth_state.dart';
