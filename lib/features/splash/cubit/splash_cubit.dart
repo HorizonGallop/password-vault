@@ -19,8 +19,13 @@ class SplashCubit extends Cubit<SplashState> {
   final _firestore = FirebaseFirestore.instance;
   final _secureStorage = const FlutterSecureStorage();
 
+  /// ✅ Safe Emit Helper
+  void safeEmit(SplashState state) {
+    if (!isClosed) emit(state);
+  }
+
   Future<void> startSplash() async {
-    emit(SplashLoading());
+    safeEmit(SplashLoading());
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -31,26 +36,28 @@ class SplashCubit extends Cubit<SplashState> {
     final onboardingDone =
         await _secureStorage.read(key: _onboardingKey) == 'true';
     if (!onboardingDone) {
-      emit(SplashNavigateToOnboarding());
+      safeEmit(SplashNavigateToOnboarding());
       return;
     }
 
     // ✅ لو عندنا بيانات محلية لكن المستخدم مش لوج إن
     final localUser = userBox.get('user');
     if (localUser != null && _auth.currentUser == null) {
-      emit(SplashNavigateToGoogleAuth());
+      safeEmit(SplashNavigateToGoogleAuth());
       return;
     }
 
     // ✅ Firebase Auth
     final user = _auth.currentUser;
     if (user == null) {
-      emit(SplashNavigateToGoogleAuth());
+      safeEmit(SplashNavigateToGoogleAuth());
       return;
     }
 
     // ✅ Fetch من Firestore
     final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (isClosed) return;
+
     if (doc.exists) {
       final userData = doc.data()!;
       final userModel = UserModel.fromMap(userData);
@@ -59,19 +66,19 @@ class SplashCubit extends Cubit<SplashState> {
 
       final hasMasterPassword = userData['hasMasterPassword'] == true;
       if (!hasMasterPassword) {
-        emit(SplashNavigateToMasterPassword());
+        safeEmit(SplashNavigateToMasterPassword());
         return;
       }
 
       final biometricEnabled =
           await _secureStorage.read(key: _biometricKey) == 'true';
       if (biometricEnabled) {
-        emit(SplashNavigateToBiometric());
+        safeEmit(SplashNavigateToBiometric());
       } else {
-        emit(SplashNavigateToVerifyMasterPassword());
+        safeEmit(SplashNavigateToVerifyMasterPassword());
       }
     } else {
-      emit(SplashNavigateToGoogleAuth());
+      safeEmit(SplashNavigateToGoogleAuth());
     }
   }
 

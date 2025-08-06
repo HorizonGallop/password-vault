@@ -22,20 +22,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   StreamSubscription? _passwordsSubscription;
 
-  /// قائمة أيقونات متاحة لكلمات السر
-  final List<IconData> availableIcons = [
-    Icons.lock,
-    Icons.vpn_key,
-    Icons.security,
-    Icons.gamepad,
-    Icons.shopping_cart,
-    Icons.work,
-    Icons.web,
-    Icons.credit_card,
-    Icons.email,
-    Icons.folder,
-  ];
-
   /// قائمة الفئات المتاحة
   final List<String> categories = [
     "Social Media",
@@ -273,8 +259,9 @@ class HomeCubit extends Cubit<HomeState> {
                   masterPassword,
                 );
               } catch (_) {
-                decryptedEmail = "****";
-                decryptedPassword = "****";
+                decryptedEmail =
+                    data['email']; // خليه يحتفظ بالقيمة المشفرة لو حصل خطأ
+                decryptedPassword = data['password'];
               }
 
               return PasswordModel.fromMap({

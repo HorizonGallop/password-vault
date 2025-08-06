@@ -14,6 +14,9 @@ import 'features/splash/cubit/splash_cubit.dart';
 import 'features/splash/screen/splash_screen.dart';
 import 'firebase_options.dart';
 
+final GlobalKey<NavigatorState> navigatorKey =
+    GlobalKey<NavigatorState>(); // ✅ أضف هذه
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeFirebase();
@@ -69,6 +72,7 @@ class MyApp extends StatelessWidget {
           child: BlocBuilder<ThemeCubit, ThemeData>(
             builder: (context, theme) {
               return MaterialApp(
+                navigatorKey: navigatorKey, // ✅ هنا
                 debugShowCheckedModeBanner: false,
                 title: 'Pswrd Vault',
                 theme: theme,

@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pswrd_vault/core/helper/encryption_helper.dart';
 import 'master_password_state.dart';
 
@@ -14,6 +15,8 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   MasterPasswordValidationState? _lastValidationState;
+
+  final _secureStorage = const FlutterSecureStorage();
 
   /// ✅ التحقق من قوة الباسوورد
   void validateMasterPassword(String password, String confirmPassword) {
@@ -82,6 +85,9 @@ class MasterPasswordCubit extends Cubit<MasterPasswordState> {
         'salt': salt,
         'hasMasterPassword': true,
       });
+
+      /// ✅ حفظ الماستر باسورد في Secure Storage
+      await _secureStorage.write(key: 'master_password', value: password);
 
       emit(MasterPasswordSaved());
     } catch (e) {

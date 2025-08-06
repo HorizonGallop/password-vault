@@ -23,11 +23,14 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
     return BlocConsumer<VerifyMasterPasswordCubit, VerifyMasterPasswordState>(
       listener: (context, state) {
         if (state is MasterPasswordVerified || state is BiometricSuccess) {
-          final enteredPassword = passwordController.text;
+          final masterPassword = state is MasterPasswordVerified
+              ? state.masterPassword
+              : (state as BiometricSuccess).masterPassword;
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => BottomNavScreen(masterPassword: enteredPassword),
+              builder: (_) => BottomNavScreen(masterPassword: masterPassword),
             ),
           );
         } else if (state is MasterPasswordVerifyFailed ||
@@ -36,18 +39,15 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
           final error = state is MasterPasswordVerifyFailed
               ? state.error
               : state is VerifyMasterPasswordError
-              ? state.message
-              : (state as BiometricFailure).error;
+                  ? state.message
+                  : (state as BiometricFailure).error;
 
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(error)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error)));
         }
       },
-
       builder: (context, state) {
-        final isLoading =
-            state is MasterPasswordVerifying ||
+        final isLoading = state is MasterPasswordVerifying ||
             state is BiometricAuthenticating;
 
         final useBiometric = context.watch<SettingsCubit>().state.useBiometric;
@@ -80,8 +80,7 @@ class VerifyMasterPasswordScreen extends StatelessWidget {
                                         context
                                             .read<VerifyMasterPasswordCubit>()
                                             .verifyMasterPassword(
-                                              passwordController.text,
-                                            );
+                                                passwordController.text);
                                       },
                                 backgroundColor: AppColors.primary,
                               ),

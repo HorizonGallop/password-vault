@@ -3,11 +3,14 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pswrd_vault/features/profile/cubit/profile_state.dart';
 import 'package:pswrd_vault/core/models/user_model.dart';
+import 'package:pswrd_vault/features/settings/cubit/settings_cubit.dart';
+import 'package:pswrd_vault/main.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit() : super(ProfileInitial());
@@ -63,6 +66,13 @@ class ProfileCubit extends Cubit<ProfileState> {
       await GoogleSignIn().signOut();
       await _auth.signOut();
       await _secureStorage.deleteAll();
+
+      // ✅ إعادة ضبط خيار البصمة
+      final settingsCubit = BlocProvider.of<SettingsCubit>(
+        navigatorKey.currentContext!,
+      );
+      await settingsCubit.resetBiometric();
+
       emit(SignedOut());
     } catch (e) {
       emit(ProfileError("Failed to sign out: $e"));
@@ -139,6 +149,12 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       // 5. حذف البيانات المحلية
       await _secureStorage.deleteAll();
+
+      // ✅ إعادة ضبط خيار البصمة
+      final settingsCubit = BlocProvider.of<SettingsCubit>(
+        navigatorKey.currentContext!,
+      );
+      await settingsCubit.resetBiometric();
 
       emit(AccountDeleted());
     } catch (e, stacktrace) {

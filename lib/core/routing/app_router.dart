@@ -59,18 +59,12 @@ class AppRouter {
       case PasswordDetailsScreen.routeName:
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => PasswordDetailsScreen(
-            passwordModel: args['passwordModel'],
-            masterPassword: args['masterPassword'],
-          ),
+          builder: (_) =>
+              PasswordDetailsScreen(passwordModel: args['passwordModel']),
         );
 
       default:
-        return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('404 - Screen Not Found')),
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
   }
 }

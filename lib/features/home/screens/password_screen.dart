@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:pswrd_vault/core/helper/encryption_helper.dart';
 import 'package:pswrd_vault/core/models/password_model.dart';
 import 'package:pswrd_vault/core/utils/app_colors.dart';
@@ -9,26 +11,82 @@ import 'package:pswrd_vault/features/home/cubit/home_cubit.dart';
 import 'package:pswrd_vault/features/home/widgets/password_form_dialog.dart';
 import 'package:pswrd_vault/features/widgets/app_info_card.dart';
 
-class PasswordDetailsScreen extends StatelessWidget {
+class PasswordDetailsScreen extends StatefulWidget {
   static const routeName = '/password-details-screen';
 
   final PasswordModel passwordModel;
-  final String masterPassword;
 
-  const PasswordDetailsScreen({
-    super.key,
-    required this.passwordModel,
-    required this.masterPassword,
-  });
+  const PasswordDetailsScreen({super.key, required this.passwordModel});
+
+  @override
+  State<PasswordDetailsScreen> createState() => _PasswordDetailsScreenState();
+}
+
+class _PasswordDetailsScreenState extends State<PasswordDetailsScreen> {
+  final _secureStorage = const FlutterSecureStorage();
+  final _auth = LocalAuthentication();
+
+  bool isLoading = true;
+  String? decryptedEmail;
+  String? decryptedPassword;
+  String? masterPassword;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticateAndLoad();
+  }
+
+  Future<void> _authenticateAndLoad() async {
+    try {
+      /// ✅ التحقق بالبصمة أولاً
+      bool didAuthenticate = await _auth.authenticate(
+        localizedReason: 'يرجى التحقق بالبصمة للوصول إلى كلمات المرور',
+        options: const AuthenticationOptions(biometricOnly: true),
+      );
+
+      if (!didAuthenticate) {
+        if (mounted) Navigator.pop(context);
+        return;
+      }
+
+      /// ✅ جلب الماستر باسوورد من Secure Storage
+      masterPassword = await _secureStorage.read(key: 'master_password');
+
+      if (masterPassword != null) {
+        decryptedEmail = EncryptionHelper.decryptText(
+          widget.passwordModel.email,
+          masterPassword!,
+        );
+        decryptedPassword = EncryptionHelper.decryptText(
+          widget.passwordModel.password,
+          masterPassword!,
+        );
+      } else {
+        decryptedEmail = widget.passwordModel.email; // في حالة الفشل
+        decryptedPassword = widget.passwordModel.password;
+      }
+    } catch (e) {
+      decryptedEmail = widget.passwordModel.email;
+      decryptedPassword = widget.passwordModel.password;
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-
-    final decryptedEmail = _safeDecrypt(passwordModel.email);
-    final decryptedPassword = _safeDecrypt(passwordModel.password);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -47,10 +105,12 @@ class PasswordDetailsScreen extends StatelessWidget {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(passwordModel.service, style: theme.textTheme.titleLarge),
+        title: Text(
+          widget.passwordModel.service,
+          style: theme.textTheme.titleLarge,
+        ),
         centerTitle: true,
       ),
-
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -68,49 +128,50 @@ class PasswordDetailsScreen extends StatelessWidget {
               children: [
                 AppInfoCard(
                   title: "الخدمة",
-                  subtitle: passwordModel.service,
+                  subtitle: widget.passwordModel.service,
                   icon: Icons.apps,
                   iconColor: colorScheme.primary,
                 ),
                 AppInfoCard(
                   title: "اسم المستخدم",
-                  subtitle: passwordModel.username,
+                  subtitle: widget.passwordModel.username,
                   icon: Icons.person,
                   iconColor: colorScheme.primary,
                   copyable: true,
                 ),
                 AppInfoCard(
                   title: "الإيميل",
-                  subtitle: decryptedEmail,
+                  subtitle: decryptedEmail ?? '',
                   icon: Icons.email,
                   iconColor: colorScheme.primary,
                   copyable: true,
+                  isSensitive: true,
                 ),
                 AppInfoCard(
                   title: "كلمة السر",
-                  subtitle: decryptedPassword,
+                  subtitle: decryptedPassword ?? '',
                   icon: Icons.lock,
                   iconColor: colorScheme.primary,
                   copyable: true,
                   isPassword: true,
                 ),
-                if (passwordModel.note != null &&
-                    passwordModel.note!.isNotEmpty)
+                if (widget.passwordModel.note != null &&
+                    widget.passwordModel.note!.isNotEmpty)
                   AppInfoCard(
                     title: "ملاحظات",
-                    subtitle: passwordModel.note!,
+                    subtitle: widget.passwordModel.note!,
                     icon: Icons.note_alt_outlined,
                     iconColor: colorScheme.primary,
                   ),
                 AppInfoCard(
                   title: "تاريخ الإضافة",
-                  subtitle: _formatDate(passwordModel.createdAt),
+                  subtitle: _formatDate(widget.passwordModel.createdAt),
                   icon: Icons.calendar_today,
                   iconColor: colorScheme.primary,
                 ),
                 AppInfoCard(
                   title: "آخر تحديث",
-                  subtitle: _formatDate(passwordModel.updatedAt),
+                  subtitle: _formatDate(widget.passwordModel.updatedAt),
                   icon: Icons.update,
                   iconColor: colorScheme.primary,
                 ),
@@ -119,11 +180,9 @@ class PasswordDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-
-      /// ✅ زر تعديل بسيط
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding:  EdgeInsets.only(bottom: 16.h),
+          padding: EdgeInsets.only(bottom: 16.h),
           child: TextButton.icon(
             icon: Icon(Icons.edit, color: colorScheme.primary, size: 20.sp),
             label: Text(
@@ -144,8 +203,9 @@ class PasswordDetailsScreen extends StatelessWidget {
                   return BlocProvider.value(
                     value: homeCubit,
                     child: PasswordFormDialog(
-                      existingPassword: passwordModel,
+                      existingPassword: widget.passwordModel,
                       homeCubit: homeCubit,
+                      masterPassword: masterPassword!,
                     ),
                   );
                 },
@@ -155,14 +215,6 @@ class PasswordDetailsScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _safeDecrypt(String value) {
-    try {
-      return EncryptionHelper.decryptText(value, masterPassword);
-    } catch (_) {
-      return value;
-    }
   }
 
   String _formatDate(DateTime date) {

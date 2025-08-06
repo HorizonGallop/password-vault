@@ -4,13 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppInfoCard extends StatefulWidget {
   final String title;
-  final String subtitle;
+  final String subtitle; // النص الأصلي (الحقيقي)
   final IconData icon;
   final Color iconColor;
   final Widget? trailing;
   final VoidCallback? onTap;
   final bool copyable;
   final bool isPassword;
+  final bool isSensitive;
 
   const AppInfoCard({
     super.key,
@@ -22,6 +23,7 @@ class AppInfoCard extends StatefulWidget {
     this.onTap,
     this.copyable = false,
     this.isPassword = false,
+    this.isSensitive = false,
   });
 
   @override
@@ -35,6 +37,8 @@ class _AppInfoCardState extends State<AppInfoCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+
+    final bool hideContent = widget.isPassword || widget.isSensitive;
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -77,7 +81,7 @@ class _AppInfoCardState extends State<AppInfoCard> {
                   ),
                   SizedBox(height: 6.h),
                   SelectableText(
-                    widget.isPassword
+                    hideContent
                         ? (_isVisible ? widget.subtitle : '••••••••')
                         : widget.subtitle,
                     style: textTheme.bodyLarge?.copyWith(fontSize: 14.sp),
@@ -85,7 +89,7 @@ class _AppInfoCardState extends State<AppInfoCard> {
                 ],
               ),
             ),
-            if (widget.isPassword)
+            if (hideContent)
               IconButton(
                 icon: Icon(
                   _isVisible ? Icons.visibility_off : Icons.visibility,
@@ -102,7 +106,11 @@ class _AppInfoCardState extends State<AppInfoCard> {
               IconButton(
                 icon: Icon(Icons.copy, size: 20.sp, color: theme.primaryColor),
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: widget.subtitle));
+                  Clipboard.setData(
+                    ClipboardData(
+                      text: widget.subtitle, // ✅ النسخ دايمًا القيمة الحقيقية
+                    ),
+                  );
                   _showCopyFeedback(context, widget.title);
                 },
               ),
@@ -114,28 +122,11 @@ class _AppInfoCardState extends State<AppInfoCard> {
   }
 
   void _showCopyFeedback(BuildContext context, String field) {
-    final overlay = Overlay.of(context);
-    final entry = OverlayEntry(
-      builder: (_) => Positioned(
-        bottom: 80,
-        left: MediaQuery.of(context).size.width / 2 - 75,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              "$field تم نسخه!",
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("$field تم نسخه!"),
+        duration: const Duration(seconds: 1),
       ),
     );
-    overlay.insert(entry);
-    Future.delayed(const Duration(seconds: 1), () => entry.remove());
   }
 }

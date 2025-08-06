@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 
 part 'verify_master_password_state.dart';
@@ -14,6 +15,7 @@ class VerifyMasterPasswordCubit extends Cubit<VerifyMasterPasswordState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final LocalAuthentication _localAuth = LocalAuthentication();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   /// ✅ التحقق من الماستر باسوورد
   Future<void> verifyMasterPassword(String enteredPassword) async {
@@ -48,7 +50,12 @@ class VerifyMasterPasswordCubit extends Cubit<VerifyMasterPasswordState> {
       final enteredHash = _hashPassword(enteredPassword, salt);
 
       if (enteredHash == storedHash) {
-        emit(MasterPasswordVerified());
+        // ✅ نحفظ الباسوورد في التخزين الآمن لو فعل البصمة بعدين
+        await _secureStorage.write(
+          key: 'masterPassword',
+          value: enteredPassword,
+        );
+        emit(MasterPasswordVerified(masterPassword: enteredPassword));
       } else {
         emit(const MasterPasswordVerifyFailed("Incorrect master password"));
       }
@@ -75,7 +82,13 @@ class VerifyMasterPasswordCubit extends Cubit<VerifyMasterPasswordState> {
       );
 
       if (didAuthenticate) {
-        emit(BiometricSuccess());
+        // ✅ نقرأ الباسوورد من التخزين الآمن
+        final storedPassword = await _secureStorage.read(key: 'masterPassword');
+        if (storedPassword != null && storedPassword.isNotEmpty) {
+          emit(BiometricSuccess(masterPassword: storedPassword));
+        } else {
+          emit(const BiometricFailure("Master password not found in storage"));
+        }
       } else {
         emit(const BiometricFailure("Authentication failed"));
       }

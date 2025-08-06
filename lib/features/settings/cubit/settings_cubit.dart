@@ -37,4 +37,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     await _settingsBox!.put('language', lang);
     emit(state.copyWith(language: lang));
   }
+
+  /// ✅ إعادة ضبط البصمة عند تسجيل الخروج أو حذف الحساب
+  Future<void> resetBiometric() async {
+    if (_settingsBox == null) return;
+    await _settingsBox!.put('useBiometric', false);
+    emit(state.copyWith(useBiometric: false));
+  }
 }

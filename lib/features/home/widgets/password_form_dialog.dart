@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pswrd_vault/core/helper/encryption_helper.dart';
 import 'package:pswrd_vault/core/models/password_model.dart';
 import '../cubit/home_cubit.dart';
 
 class PasswordFormDialog extends StatefulWidget {
   final PasswordModel? existingPassword;
   final HomeCubit homeCubit;
+  final String masterPassword;
 
   const PasswordFormDialog({
     super.key,
     this.existingPassword,
     required this.homeCubit,
+    required this.masterPassword,
   });
 
   @override
@@ -24,6 +27,8 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final noteController = TextEditingController();
+
+  bool _isPasswordVisible = false;
 
   final Map<String, String?> errors = {
     'service': null,
@@ -40,9 +45,15 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
     if (widget.existingPassword != null) {
       final pwd = widget.existingPassword!;
       serviceController.text = pwd.service;
-      emailController.text = pwd.email;
+      emailController.text = EncryptionHelper.decryptText(
+        pwd.email,
+        widget.masterPassword,
+      );
       usernameController.text = pwd.username;
-      passwordController.text = pwd.password;
+      passwordController.text = EncryptionHelper.decryptText(
+        pwd.password,
+        widget.masterPassword,
+      );
       noteController.text = pwd.note ?? '';
       widget.homeCubit.selectPasswordIcon(
         IconData(
@@ -88,12 +99,7 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
             _buildTextField("اسم المستخدم", usernameController, 'username'),
             const SizedBox(height: 12),
 
-            _buildPasswordField(
-              passwordController,
-              cubit.isPasswordVisible,
-              cubit.togglePasswordVisibility,
-              'password',
-            ),
+            _buildPasswordField(passwordController, 'password'),
             const SizedBox(height: 16),
 
             Text(
@@ -314,12 +320,7 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
     );
   }
 
-  Widget _buildPasswordField(
-    TextEditingController controller,
-    bool isVisible,
-    VoidCallback toggleVisibility,
-    String keyName,
-  ) {
+  Widget _buildPasswordField(TextEditingController controller, String keyName) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return Column(
@@ -327,7 +328,7 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
       children: [
         TextField(
           controller: controller,
-          obscureText: !isVisible,
+          obscureText: !_isPasswordVisible,
           style: theme.textTheme.bodyMedium!.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -344,10 +345,14 @@ class _PasswordFormDialogState extends State<PasswordFormDialog> {
             ),
             suffixIcon: IconButton(
               icon: Icon(
-                isVisible ? Icons.visibility : Icons.visibility_off,
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                 color: colorScheme.onSurface,
               ),
-              onPressed: toggleVisibility,
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
             ),
           ),
         ),
